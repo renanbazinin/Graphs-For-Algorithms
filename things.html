@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topological Sort Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="stylesNew.css">
+
+</head>
+<body>
+    <h1>Topological Sort Visualizer</h1>
+    <div id="canvasContainer">
+        <div id="buttonContainer">
+            <button id="moreSpaceButton">More Space</button>
+            <button id="lessSpaceButton">Less Space</button>
+            <button id="importGraphButton">Import Graph</button>
+            <button id="importClassicExampleButton">Import Instant Classic Example</button>
+        </div>
+        <canvas id="topoCanvas" width="800" height="600"></canvas>
+    </div>
+    <button id="startButton">Start Visualization</button>
+    <button id="nextButton">Next Step</button>
+
+    <div id="visualizerInfo">
+        <h2>Current State:</h2>
+        <div id="sortedNodesList">Sorted Nodes: </div>
+        <div id="queueList">Queue: </div>
+        <div id="indegreeList">
+            <table>
+                <tr id="indegreeTableRow"></tr>
+            </table>
+        </div>
+    </div>
+    <button id="printDirectedAdjListButton">Print Directed Adjacency List</button>
+    <div id="directionButtonContainer">
+        <button id="rtlButton" class="pressed">Right to Left</button>
+        <button id="ltrButton">Left to Right</button>
+    </div>
+    <pre id="directedAdjacencyList"></pre>
+    <div id="importGraphModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModalButton" class="close">&times;</span>
+            <h2>Import Graph</h2>
+            <textarea id="graphInput" placeholder="Enter adjacency list..."></textarea>
+            <button id="loadGraphButton">Load Graph</button>
+        </div>
+    </div>
+    <footer id="footer">
+        <button onclick="window.location.href='index.html'">Home</button>
+        <button onclick="window.location.href='things.html'">Topological Sort</button>
+    </footer>
+    <script src="baseGraph.js"></script>
+    <script src="directedGraph.js"></script>
+    <script src="topologicalSort.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Visualization</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Graph Visualization</h1>
+    <button onclick="toggleGraph()">Toggle Directed/Undirected</button>
+
+    <div id="undirectedGraph">
+        <h2>Undirected Graph</h2>
+     
+        <button id="plusButton">More Space</button>
+        <button id="minusButton">Less Space</button>
+        <button onclick="addNodeLeftUnDirect()">Add Node to Left side</button>
+        <canvas id="undirectedCanvas" width="800" height="600"></canvas>
+        <div>
+            <h3>Add Node</h3>
+            <input type="text" id="undirectedNodeInput" placeholder="Node Label">
+            <button onclick="addUndirectedNode()">Add Node With Label</button>
+        </div>
+        
+        <div>
+            <h3>Add Edge</h3>
+            <input type="text" id="undirectedEdgeNode1" placeholder="Node 1">
+            <input type="text" id="undirectedEdgeNode2" placeholder="Node 2">
+            <button onclick="addUndirectedEdge()">Add Edge</button>
+        </div>
+
+        <button onclick="printUndirectedAdjacencyList()">Print Adjacency List</button>
+        <pre id="undirectedAdjacencyList"></pre>
+    </div>
+    
+    <div id="directedGraph" style="display:none;">
+        <h2>Directed Graph</h2>
+        <button id="plusButton2">More Space</button>
+        <button id="minusButton2">Less Space</button>
+        <button onclick="addNodeLeftDirect()">Add Node to Left side</button>
+        <canvas id="directedCanvas" width="800" height="600"></canvas>
+        
+        <div>
+            <h3>Add Node</h3>
+            <input type="text" id="directedNodeInput" placeholder="Node Label">
+            <button onclick="addDirectedNode()">Add Node With Label</button>
+        </div>
+        
+        <div>
+            <h3>Add Edge</h3>
+            <input type="text" id="directedEdgeNode1" placeholder="Node 1">
+            <input type="text" id="directedEdgeNode2" placeholder="Node 2">
+            <button onclick="addDirectedEdge()">Add Edge</button>
+        </div>
+
+        <button onclick="printDirectedAdjacencyList()">Print Adjacency List</button>
+        <pre id="directedAdjacencyList"></pre>
+    </div>
+    <footer id="footer">
+        <button onclick="window.location.href='index.html'">Home</button>
+        <button onclick="window.location.href='things.html'">Topological Sort</button>
+
+    </footer>
+    <script src="baseGraph.js"></script>
+    <script src="undirectedGraph.js"></script>
+    <script src="directedGraph.js" defer></script>
+    <script>
+        document.getElementById('undirectedGraph').style.display = 'block';
+        document.getElementById('directedGraph').style.display = 'none';
+
+        function toggleGraph() {
+            const undirectedGraph = document.getElementById('undirectedGraph');
+            const directedGraph = document.getElementById('directedGraph');
+            if (undirectedGraph.style.display === 'none') {
+                undirectedGraph.style.display = 'block';
+                directedGraph.style.display = 'none';
+            } else {
+                undirectedGraph.style.display = 'none';
+                directedGraph.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
