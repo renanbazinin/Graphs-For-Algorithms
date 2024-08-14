@@ -61,9 +61,8 @@ button:active {
     align-items: center;
     margin-bottom: 20px;
 
-    width: 100%;
-    max-width: 100%; /* Prevent overflow */
     overflow: hidden; /* Hide any potential overflow */
+
 }
 
 pre {
@@ -149,7 +148,7 @@ pre {
     border: 1px solid #444;
     margin-top: 10px;
     width: 100%;
-    overflow: auto;
+    
 }
 
 
@@ -163,8 +162,7 @@ pre {
     gap: 10px; /* Add spacing between the buttons */
     margin-bottom: 20px; /* Add some space below the button container */
 
-    width: 100%; /* Ensure full width */
-    max-width: 100%; /* Prevent overflow */
+    
 }
 
 #directionButtonContainer button {
