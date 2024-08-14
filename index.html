@@ -12,15 +12,16 @@
 
     <!-- Button Container -->
     <div id="buttonContainer">
-        <div id="resizeControls">
-            <button id="plusButton">More Space</button>
-            <button id="minusButton">Less Space</button>
-        </div>
+
         <button onclick="toggleGraph()">Toggle Directed/Undirected</button>
     </div>
-
-    <!-- Undirected Graph Section -->
     <div id="undirectedGraph">
+    <div id="resizeControls">
+        <button id="plusButton">More Space</button>
+        <button id="minusButton">Less Space</button>
+    </div>
+    <!-- Undirected Graph Section -->
+
         <h2>Undirected Graph</h2>
         <button id="importUndirectedGraphButton">Import or Edit Graph</button>
         <button onclick="addNodeLeftUnDirect()">Add Node to Left side</button>
@@ -45,6 +46,10 @@
 
     <!-- Directed Graph Section -->
     <div id="directedGraph" style="display:none;">
+        <div id="resizeControls">
+            <button id="plusButton2">More Space</button>
+            <button id="minusButton2">Less Space</button>
+        </div>
         <h2>Directed Graph</h2>
         <button id="importDirectedGraphButton">Import or Edit Graph</button>
         <button onclick="addNodeLeftDirect()">Add Node to Left side</button>
