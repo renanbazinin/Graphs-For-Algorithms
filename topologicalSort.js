@@ -1,5 +1,17 @@
+function detectLanguage(text) {
+    const hebrewPattern = /[\u0590-\u05FF]/;
+    const englishPattern = /[a-zA-Z]/;
+    
+    if (hebrewPattern.test(text)) {
+        return 'rtl';
+    } else if (englishPattern.test(text)) {
+        return 'ltr';
+    } else {
+        return 'ltr'; // Default to LTR if no clear pattern
+    }
+}
+
 window.onload = function() {
-    // Get the canvas and context
     const canvas = document.getElementById('topoCanvas');
     if (!canvas) {
         console.error('Canvas element not found!');
@@ -7,8 +19,6 @@ window.onload = function() {
     }
 
     const ctx = canvas.getContext('2d');
-
-    // Initialize the graph
     const graph = new DirectedGraph();
 
     // Add nodes and edges
@@ -32,7 +42,6 @@ window.onload = function() {
     graph.addEdge('עניבה', 'מעיל');
     graph.addEdge('שעון', 'חגורה');
 
-    // Topological sort visualizer class
     class TopologicalSortVisualizer {
         constructor(graph, canvas, ctx) {
             this.graph = graph;
@@ -41,52 +50,42 @@ window.onload = function() {
             this.sortedNodes = [];
             this.indegree = new Map();
             this.queue = [];
-            this.visited = new Set(); // Track visited nodes
+            this.visited = new Set();
             this.step = 0;
             this.selectedNode = null;
             this.offsetX = 0;
             this.offsetY = 0;
+
+            this.previousState = [];
 
             this.initialize();
             this.attachEventListeners();
         }
 
         initialize() {
-            // Initialize indegree for all nodes
             this.graph.nodes.forEach(node => {
                 this.indegree.set(node, 0);
             });
-        
-            // Calculate indegree for each node
+
             this.graph.edges.forEach((neighbors, node) => {
                 neighbors.forEach(neighbor => {
                     this.indegree.set(neighbor, this.indegree.get(neighbor) + 1);
                 });
             });
-        
-            // Log indegree of each node
-            console.log('Indegrees:', Array.from(this.indegree.entries()));
-        
-            // Initialize queue with nodes that have indegree 0
-            const initialQueue = new Set(); // Use a Set to avoid duplicates
+
+            const initialQueue = new Set();
             this.graph.nodes.forEach(node => {
                 if (this.indegree.get(node) === 0) {
-                    initialQueue.add(node); // Add to the set
+                    initialQueue.add(node);
                 }
             });
-        
-            // Convert Set to Array and assign to the queue
+
             this.queue = Array.from(initialQueue);
-        
-            // Log initial queue
-            console.log('Initial Queue:', this.queue);
-        
             this.sortedNodes = [];
-            this.visited.clear(); // Clear visited set for actual processing
+            this.visited.clear();
             this.updateUI();
             this.graph.draw(this.ctx);
         }
-        
 
         attachEventListeners() {
             this.canvas.addEventListener('mousedown', (event) => this.handleMouseDown(event));
@@ -119,7 +118,6 @@ window.onload = function() {
                 this.graph.positions[this.selectedNode] = { x, y };
                 this.graph.draw(this.ctx);
 
-                // Re-highlight sorted nodes
                 this.sortedNodes.forEach(node => this.highlightNode(node));
             }
         }
@@ -128,37 +126,59 @@ window.onload = function() {
             this.selectedNode = null;
         }
 
+        saveState() {
+            this.previousState.push({
+                sortedNodes: [...this.sortedNodes],
+                queue: [...this.queue],
+                indegree: new Map(this.indegree),
+                visited: new Set(this.visited)
+            });
+        }
+
+        undoStep() {
+            if (this.previousState.length > 0) {
+                const lastState = this.previousState.pop();
+                this.sortedNodes = lastState.sortedNodes;
+                this.queue = lastState.queue;
+                this.indegree = lastState.indegree;
+                this.visited = lastState.visited;
+
+                this.graph.draw(this.ctx);
+                this.sortedNodes.forEach(node => this.highlightNode(node));
+                this.updateUI();
+            }
+        }
+
         nextStep() {
             if (this.queue.length > 0) {
+                this.saveState();
+
                 const currentNode = this.queue.shift();
                 
-                // If this node has already been processed, skip it
                 if (this.visited.has(currentNode)) {
                     this.updateUI();
                     return;
                 }
                 
                 this.sortedNodes.push(currentNode);
-                this.visited.add(currentNode); // Mark this node as visited
-        
+                this.visited.add(currentNode);
+
                 this.graph.edges.get(currentNode).forEach(neighbor => {
                     this.indegree.set(neighbor, this.indegree.get(neighbor) - 1);
                     if (this.indegree.get(neighbor) === 0 && !this.visited.has(neighbor)) {
                         this.queue.push(neighbor);
                     }
                 });
-        
+
                 this.highlightNode(currentNode);
                 this.updateUI();
             } else {
-                // Check for cycles: if any node still has indegree > 0, there's a cycle
                 const hasCycle = this.graph.nodes.some(node => this.indegree.get(node) > 0);
                 if (hasCycle) {
                     alert("Cycle detected! The graph is not a DAG.");
                 }
             }
         }
-        
 
         highlightNode(node) {
             const pos = this.graph.positions[node];
@@ -166,6 +186,7 @@ window.onload = function() {
             this.ctx.arc(pos.x, pos.y, this.graph.radius, 0, 2 * Math.PI);
             this.ctx.fillStyle = 'yellow';
             this.ctx.fill();
+            this.ctx.strokeStyle = 'orange';
             this.ctx.stroke();
 
             this.ctx.fillStyle = '#1e1e1e';
@@ -174,33 +195,49 @@ window.onload = function() {
             this.ctx.font = `${this.graph.radius / 2}px Arial`;
             this.ctx.fillText(node, pos.x, pos.y);
         }
+
         updateUI() {
-            // Update the sortedNodes list with -> between nodes
             document.getElementById('sortedNodesList').innerText = `Sorted Nodes: ${this.sortedNodes.join(' -> ')}`;
-        
-            // Update the queue with -> between nodes
             document.getElementById('queueList').innerText = `Queue: ${this.queue.join(' -> ')}`;
-        
-            // Get the table row element
+            
             const indegreeTableRow = document.getElementById('indegreeTableRow');
-
-            // Clear the current row content
+            const indegreeTableHeaderRow = document.getElementById('indegreeTableHeaderRow');
+            
             indegreeTableRow.innerHTML = '';
-
-            // Populate the row with the indegree entries
+            indegreeTableHeaderRow.innerHTML = '';
+        
+            Array.from(this.indegree.keys()).forEach(node => {
+                const headerCell = document.createElement('th');
+                headerCell.innerText = node;
+        
+                // Dynamically adjust font size based on node name length
+                console.log(node.length)
+                if (node.length > 4) {
+                    headerCell.style.fontSize = '0.6rem'; // Smaller font for longer names
+                } else if (node.length > 5) {
+                    headerCell.style.fontSize = '0.5rem'; // Even smaller for very long names
+                } else {
+                    headerCell.style.fontSize = '0.7rem'; // Default size for shorter names
+                }
+        
+                indegreeTableHeaderRow.appendChild(headerCell);
+            });
+        
             Array.from(this.indegree.entries()).forEach(([node, degree]) => {
                 const cell = document.createElement('td');
-                cell.innerText = `${node}\n ${degree}`;
+                cell.innerText = degree;
                 cell.style.padding = '5px 10px';
                 indegreeTableRow.appendChild(cell);
             });
         }
         
+        
+        
     }
 
     let visualizer;
     function loadGraphFromText(text) {
-        graph.nodes = []; // Clear the existing graph
+        graph.nodes = [];
         graph.edges.clear();
 
         const lines = text.split('\n');
@@ -217,7 +254,7 @@ window.onload = function() {
         });
 
         if (visualizer) {
-            visualizer.graph = graph; // Update the graph in the visualizer
+            visualizer.graph = graph;
             visualizer.initialize();
         } else {
             visualizer = new TopologicalSortVisualizer(graph, canvas, ctx);
@@ -225,13 +262,11 @@ window.onload = function() {
         }
     }
 
-    // Button to start the graph visualization
     document.getElementById('startButton').addEventListener('click', () => {
         visualizer = new TopologicalSortVisualizer(graph, canvas, ctx);
         visualizer.initialize();
     });
 
-    // Event listener for stepping through the topological sort
     document.getElementById('nextButton').addEventListener('click', () => {
         if (visualizer) {
             visualizer.nextStep();
@@ -240,11 +275,16 @@ window.onload = function() {
         }
     });
 
+    document.getElementById('undoButton').addEventListener('click', () => {
+        if (visualizer) {
+            visualizer.undoStep();
+        }
+    });
+
     function resizeCanvas(factor) {
         const newWidth = canvas.width + factor;
         const newHeight = canvas.height + factor;
 
-        // Set minimum and maximum sizes for the canvas
         if (newWidth >= 400 && newHeight >= 300 && newWidth <= 1200 && newHeight <= 900) {
             canvas.width = newWidth;
             canvas.height = newHeight;
@@ -254,11 +294,11 @@ window.onload = function() {
             }
         }
     }
-    function printDirectedAdjacencyList() {
-        const adjacencyList = graph.getAdjacencyList(); // Use the method from your DirectedGraph class
+
+    document.getElementById('printDirectedAdjListButton').addEventListener('click', () => {
+        const adjacencyList = graph.getAdjacencyList();
         document.getElementById('directedAdjacencyList').innerText = adjacencyList;
-    }
-    document.getElementById('printDirectedAdjListButton').addEventListener('click', printDirectedAdjacencyList);
+    });
 
     document.getElementById('moreSpaceButton').addEventListener('click', () => resizeCanvas(100));
     document.getElementById('lessSpaceButton').addEventListener('click', () => resizeCanvas(-100));
@@ -286,6 +326,10 @@ window.onload = function() {
     const graphInput = document.getElementById('graphInput');
 
     importGraphButton.addEventListener('click', () => {
+        const currentAdjacencyList = graph.getAdjacencyList();
+        graphInput.value = currentAdjacencyList;
+        const direction = detectLanguage(currentAdjacencyList);
+        toggleTextDirection(direction);
         importGraphModal.style.display = 'flex';
     });
 
@@ -306,7 +350,6 @@ window.onload = function() {
     canvas.addEventListener('touchmove', (event) => graph.handleTouchMove(event, canvas, ctx), { passive: false });
     canvas.addEventListener('touchend', (event) => graph.handleTouchEnd(event, canvas, ctx), { passive: false });
 
-    // Also attach mouse event listeners if not already done
     canvas.addEventListener('mousedown', (event) => graph.handleMouseDown(event, canvas, ctx));
     canvas.addEventListener('mousemove', (event) => graph.handleMouseMove(event, canvas, ctx));
     canvas.addEventListener('mouseup', () => graph.handleMouseUp());
@@ -316,6 +359,7 @@ window.onload = function() {
             importGraphModal.style.display = 'none';
         }
     });
+
     document.getElementById('importClassicExampleButton').addEventListener('click', loadClassicExample);
 
     function loadClassicExample() {
@@ -330,5 +374,23 @@ window.onload = function() {
         `;
         loadGraphFromText(classicExample.trim());
     }
+    loadClassicExample();
 
+    const rtlTextButton = document.getElementById('rtlTextButton');
+    const ltrTextButton = document.getElementById('ltrTextButton');
+
+    function toggleTextDirection(direction) {
+        if (direction === 'rtl') {
+            graphInput.style.direction = 'rtl';
+            rtlTextButton.classList.add('pressed');
+            ltrTextButton.classList.remove('pressed');
+        } else {
+            graphInput.style.direction = 'ltr';
+            rtlTextButton.classList.remove('pressed');
+            ltrTextButton.classList.add('pressed');
+        }
+    }
+
+    rtlTextButton.addEventListener('click', () => toggleTextDirection('rtl'));
+    ltrTextButton.addEventListener('click', () => toggleTextDirection('ltr'));
 };

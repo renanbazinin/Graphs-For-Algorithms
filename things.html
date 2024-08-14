@@ -11,26 +11,43 @@
 <body>
     <h1>Topological Sort Visualizer</h1>
     <div id="canvasContainer">
+
         <div id="buttonContainer">
-            <button id="moreSpaceButton">More Space</button>
-            <button id="lessSpaceButton">Less Space</button>
-            <button id="importGraphButton">Import Graph</button>
+            <!-- <button id="moreSpaceButton">More Space</button>
+            <button id="lessSpaceButton">Less Space</button> -->
+            <div id="resizeControls">
+                <button id="moreSpaceButton">More Space</button>
+                <button id="lessSpaceButton">Less Space</button>
+            </div>
+            <button id="importGraphButton">Import Or Edit Graph</button>
+            <span>or</span>
             <button id="importClassicExampleButton">Import Instant Classic Example</button>
         </div>
         <canvas id="topoCanvas" width="800" height="600"></canvas>
     </div>
-    <button id="startButton">Start Visualization</button>
-    <button id="nextButton">Next Step</button>
+
+    <div id="controlsContainer">
+        <div id="stepControls">
+            <button id="startButton">Start Visualization</button>
+            <button id="nextButton">Next Step</button>
+            <button id="undoButton">Undo Step</button>
+        </div>
+
+    </div>
+    
 
     <div id="visualizerInfo">
         <h2>Current State:</h2>
         <div id="sortedNodesList">Sorted Nodes: </div>
+        <br/>
         <div id="queueList">Queue: </div>
         <div id="indegreeList">
             <table>
+                <tr id="indegreeTableHeaderRow"></tr>
                 <tr id="indegreeTableRow"></tr>
             </table>
         </div>
+        
     </div>
     <button id="printDirectedAdjListButton">Print Directed Adjacency List</button>
     <div id="directionButtonContainer">
@@ -42,10 +59,15 @@
         <div class="modal-content">
             <span id="closeModalButton" class="close">&times;</span>
             <h2>Import Graph</h2>
+            <div id="directionButtonsContainer">
+                <button id="rtlTextButton" class="pressed">Right to Left</button>
+                <button id="ltrTextButton">Left to Right</button>
+            </div>
             <textarea id="graphInput" placeholder="Enter adjacency list..."></textarea>
             <button id="loadGraphButton">Load Graph</button>
         </div>
     </div>
+    
     <footer id="footer">
         <button onclick="window.location.href='index.html'">Home</button>
         <button onclick="window.location.href='things.html'">Topological Sort</button>

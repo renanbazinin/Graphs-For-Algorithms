@@ -5,18 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Graph Visualization</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="stylesNew.css"> <!-- Link to the new CSS file -->
 </head>
 <body>
     <h1>Graph Visualization</h1>
-    <button onclick="toggleGraph()">Toggle Directed/Undirected</button>
 
+    <!-- Button Container -->
+    <div id="buttonContainer">
+        <div id="resizeControls">
+            <button id="plusButton">More Space</button>
+            <button id="minusButton">Less Space</button>
+        </div>
+        <button onclick="toggleGraph()">Toggle Directed/Undirected</button>
+    </div>
+
+    <!-- Undirected Graph Section -->
     <div id="undirectedGraph">
         <h2>Undirected Graph</h2>
-     
-        <button id="plusButton">More Space</button>
-        <button id="minusButton">Less Space</button>
+        <button id="importUndirectedGraphButton">Import or Edit Graph</button>
         <button onclick="addNodeLeftUnDirect()">Add Node to Left side</button>
         <canvas id="undirectedCanvas" width="800" height="600"></canvas>
+        
         <div>
             <h3>Add Node</h3>
             <input type="text" id="undirectedNodeInput" placeholder="Node Label">
@@ -33,11 +42,11 @@
         <button onclick="printUndirectedAdjacencyList()">Print Adjacency List</button>
         <pre id="undirectedAdjacencyList"></pre>
     </div>
-    
+
+    <!-- Directed Graph Section -->
     <div id="directedGraph" style="display:none;">
         <h2>Directed Graph</h2>
-        <button id="plusButton2">More Space</button>
-        <button id="minusButton2">Less Space</button>
+        <button id="importDirectedGraphButton">Import or Edit Graph</button>
         <button onclick="addNodeLeftDirect()">Add Node to Left side</button>
         <canvas id="directedCanvas" width="800" height="600"></canvas>
         
@@ -57,29 +66,36 @@
         <button onclick="printDirectedAdjacencyList()">Print Adjacency List</button>
         <pre id="directedAdjacencyList"></pre>
     </div>
+
+    <!-- Import Graph Modals -->
+    <div id="importUndirectedGraphModal" class="modal">
+        <div class="modal-content">
+            <span id="closeUndirectedModalButton" class="close">&times;</span>
+            <h2>Import or Edit Undirected Graph</h2>
+            <textarea id="undirectedGraphInput" placeholder="Enter adjacency list..."></textarea>
+            <button id="loadUndirectedGraphButton">Load Graph</button>
+        </div>
+    </div>
+
+    <div id="importDirectedGraphModal" class="modal">
+        <div class="modal-content">
+            <span id="closeDirectedModalButton" class="close">&times;</span>
+            <h2>Import or Edit Directed Graph</h2>
+            <textarea id="directedGraphInput" placeholder="Enter adjacency list..."></textarea>
+            <button id="loadDirectedGraphButton">Load Graph</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
     <footer id="footer">
         <button onclick="window.location.href='index.html'">Home</button>
         <button onclick="window.location.href='things.html'">Topological Sort</button>
-
     </footer>
+
+    <!-- Scripts -->
     <script src="baseGraph.js"></script>
     <script src="undirectedGraph.js"></script>
     <script src="directedGraph.js" defer></script>
-    <script>
-        document.getElementById('undirectedGraph').style.display = 'block';
-        document.getElementById('directedGraph').style.display = 'none';
-
-        function toggleGraph() {
-            const undirectedGraph = document.getElementById('undirectedGraph');
-            const directedGraph = document.getElementById('directedGraph');
-            if (undirectedGraph.style.display === 'none') {
-                undirectedGraph.style.display = 'block';
-                directedGraph.style.display = 'none';
-            } else {
-                undirectedGraph.style.display = 'none';
-                directedGraph.style.display = 'block';
-            }
-        }
-    </script>
+    <script src="graphImport.js"></script> <!-- New JS file for handling the import logic -->
 </body>
 </html>
