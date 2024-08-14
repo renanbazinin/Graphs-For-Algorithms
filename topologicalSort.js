@@ -239,12 +239,20 @@ window.onload = function() {
     function loadGraphFromText(text) {
         graph.nodes = [];
         graph.edges.clear();
-
+    
         const lines = text.split('\n');
         lines.forEach(line => {
-            const [node, neighbors] = line.split('->').map(part => part.trim());
+            // Trim the line to remove any leading or trailing whitespace
+            const trimmedLine = line.trim();
+    
+            // Ignore the line if it is empty (contains no characters)
+            if (trimmedLine.length === 0) {
+                return;
+            }
+    
+            const [node, neighbors] = trimmedLine.split('->').map(part => part.trim());
             graph.addNode(node);
-
+    
             if (neighbors) {
                 neighbors.split(',').forEach(neighbor => {
                     graph.addNode(neighbor.trim());
@@ -252,7 +260,7 @@ window.onload = function() {
                 });
             }
         });
-
+    
         if (visualizer) {
             visualizer.graph = graph;
             visualizer.initialize();
@@ -261,6 +269,7 @@ window.onload = function() {
             visualizer.initialize();
         }
     }
+    
 
     document.getElementById('startButton').addEventListener('click', () => {
         visualizer = new TopologicalSortVisualizer(graph, canvas, ctx);
