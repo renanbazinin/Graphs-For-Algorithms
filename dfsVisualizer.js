@@ -151,7 +151,7 @@ window.onload = function() {
     const delayLabel = document.getElementById('delayLabel');
     delaySlider.addEventListener('input', function() {
         visualizer.delay = this.value;
-        delayLabel.innerText = this.value;
+        delayLabel.innerText = this.value+"ms";
     });
 
     // Handle Import or Edit Graph
