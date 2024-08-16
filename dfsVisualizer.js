@@ -5,6 +5,7 @@ class DFSVisualizer {
         this.ctx = ctx;
         this.colors = new Map(); // Node colors (white, gray, black)
         this.delay = delay; // Delay in milliseconds
+        this.visitedNodes = []; // To store the visited nodes in sequence
     }
 
     async startDFS() {
@@ -12,6 +13,10 @@ class DFSVisualizer {
         this.graph.nodes.forEach(node => {
             this.colors.set(node, 'white');
         });
+
+        this.visitedNodes = []; // Reset visited nodes
+
+        this.clearBracketLinearTable(); // Clear the table for a new visualization
 
         // Start DFS from each unvisited node
         for (let node of this.graph.nodes) {
@@ -24,6 +29,10 @@ class DFSVisualizer {
     async visitNode(node) {
         // Mark the node as gray (in progress)
         this.colors.set(node, 'gray');
+        this.visitedNodes.push(node); // Add node to visited nodes list
+
+        // Add an opening bracket for the node
+        this.addBracketToLinearTable(node, "(");
         this.updateUI();
         this.highlightGraph();
         await this.sleep(this.delay);
@@ -37,6 +46,9 @@ class DFSVisualizer {
 
         // Mark the node as black (finished)
         this.colors.set(node, 'black');
+
+        // Add a closing bracket for the node
+        this.addBracketToLinearTable(node, ")");
         this.updateUI();
         this.highlightGraph();
         await this.sleep(this.delay);
@@ -72,15 +84,32 @@ class DFSVisualizer {
         this.ctx.fillText(node, pos.x, pos.y);
     }
 
+    clearBracketLinearTable() {
+        const bracketLinearRowBrackets = document.getElementById('bracketLinearRowBrackets');
+        const bracketLinearRowNodes = document.getElementById('bracketLinearRowNodes');
+        bracketLinearRowBrackets.innerHTML = ''; // Clear the brackets row
+        bracketLinearRowNodes.innerHTML = ''; // Clear the nodes row
+    }
+
+    addBracketToLinearTable(node, bracket) {
+        const bracketLinearRowBrackets = document.getElementById('bracketLinearRowBrackets');
+        const bracketLinearRowNodes = document.getElementById('bracketLinearRowNodes');
+
+        // Create a new table cell for the bracket
+        const tdBracket = document.createElement('td');
+        tdBracket.innerText = bracket;
+        bracketLinearRowBrackets.appendChild(tdBracket);
+
+        // Create a new table cell for the node name
+        const tdNode = document.createElement('td');
+        tdNode.innerText = node;
+        bracketLinearRowNodes.appendChild(tdNode);
+    }
+
     updateUI() {
         const visitedNodesList = document.getElementById('visitedNodesList');
 
-        // Assuming we want to show all nodes and their current color
-        const visitedNodes = Array.from(this.colors.entries())
-            .filter(([node, color]) => color !== 'white')
-            .map(([node]) => node);
-
-        visitedNodesList.innerText = `Visited Nodes: ${visitedNodes.join(' -> ')}`;
+        visitedNodesList.innerText = `Visited Nodes: ${this.visitedNodes.join(' -> ')}`;
     }
 
     sleep(ms) {
@@ -151,7 +180,7 @@ window.onload = function() {
     const delayLabel = document.getElementById('delayLabel');
     delaySlider.addEventListener('input', function() {
         visualizer.delay = this.value;
-        delayLabel.innerText = this.value+"ms";
+        delayLabel.innerText = this.value + "ms";
     });
 
     // Handle Import or Edit Graph
