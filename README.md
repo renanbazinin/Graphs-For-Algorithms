@@ -3,7 +3,7 @@
 ![Graph Visualization](https://i.imgur.com/WxVJGnE.png)
 
 Welcome to **Graphs-For-Algorithms**! This project provides an interactive platform for visualizing various graph algorithms, making it easier to understand complex concepts through visual aids.
-
+Start now: https://renanbazinin.github.io/Graphs-For-Algorithms/
 ## 🚀 Features
 
 - **Graph Creation:** Easily create and customize both directed and undirected graphs.
@@ -28,7 +28,7 @@ Welcome to **Graphs-For-Algorithms**! This project provides an interactive platf
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/your-username/Graphs-For-Algorithms.git
+    git clone https://github.com/renanbazinin/Graphs-For-Algorithms.git
     cd Graphs-For-Algorithms
     ```
 
@@ -76,6 +76,20 @@ Welcome to **Graphs-For-Algorithms**! This project provides an interactive platf
         שעון -> חגורה
         ```
 
+### Loading Graphs from URL
+
+   You can also load graphs from a URL containing a JSON file. The JSON should follow this format:
+
+   ```json
+   {
+   "nodes": [
+      {"name": "Node1", "x": 100, "y": 100},
+      {"name": "Node2", "x": 200, "y": 200}
+   ],
+   "edges": [
+      {"from": "Node1", "to": "Node2"}
+   ]
+   }
 ### Customizing the Experience
 
 - Modify `styles.css` to tweak the appearance.
@@ -100,4 +114,4 @@ Special thanks to all my mentors and to my MTA. :-)
 
 ---
 
-_Enjoyed this project? Give it a ⭐ on [GitHub](https://github.com/your-username/Graphs-For-Algorithms)!_
+_Enjoyed this project? Give it a ⭐ on [GitHub](https://github.com/renanbazinin/Graphs-For-Algorithms)!_
