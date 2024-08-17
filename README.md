@@ -83,7 +83,7 @@ Start now: https://renanbazinin.github.io/Graphs-For-Algorithms/
 ### Loading Graphs from URL
 
 You can also load graphs from a URL containing a JSON file. The JSON should follow this format:
-
+```
 {
   "nodes": [
     {"name": "Node1", "x": 100, "y": 100},
@@ -93,6 +93,7 @@ You can also load graphs from a URL containing a JSON file. The JSON should foll
     {"from": "Node1", "to": "Node2"}
   ]
 }
+```
 ### Customizing the Experience
 
 - Modify `styles.css` to tweak the appearance.
