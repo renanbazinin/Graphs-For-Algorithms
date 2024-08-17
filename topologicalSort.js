@@ -418,7 +418,7 @@ window.onload = function() {
     rtlTextButton.addEventListener('click', () => toggleTextDirection('rtl'));
     ltrTextButton.addEventListener('click', () => toggleTextDirection('ltr'));
 
-    const graphURL = 'https://raw.githubusercontent.com/renanbazinin/Graphs-For-Algorithms/main/graphInJson/courses.json'; // Replace with your URL
+    let graphURL = 'https://raw.githubusercontent.com/renanbazinin/Graphs-For-Algorithms/main/graphInJson/vacation.json'; // Replace with your URL
     document.getElementById('loadFromURLButton').addEventListener('click', () => loadGraphFromURL(graphURL));
 
     async function loadGraphFromURL(url) {
@@ -449,6 +449,56 @@ window.onload = function() {
             console.error('Error loading graph from URL:', error);
         }
     }
+
+
+    document.getElementById('loadFromURLButton').addEventListener('click', async () => {
+        // Prompt the user for the URL
+        let graphURL = prompt("Please enter the URL of the graph JSON:");
+    
+        if (graphURL) {
+            try {
+                // Fetch the JSON data from the URL
+                let response = await fetch(graphURL);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+    
+                let graphData = await response.json();
+    
+                // Ensure the graphData has the necessary structure
+                if (graphData.nodes && graphData.edges) {
+                    // Clear the existing graph
+                    graph.clear();
+    
+                    // Add nodes to the graph
+                    graphData.nodes.forEach(node => {
+                        graph.addNode(node.name, node.x, node.y);
+                    });
+    
+                    // Add edges to the graph
+                    graphData.edges.forEach(edge => {
+                        graph.addEdge(edge.from, edge.to);
+                    });
+    
+                    // Reinitialize the visualizer with the new graph data
+                    if (visualizer) {
+                        visualizer.graph = graph;
+                        visualizer.initialize();
+                    } else {
+                        visualizer = new TopologicalSortVisualizer(graph, canvas, ctx);
+                        visualizer.initialize();
+                    }
+    
+                    alert("Graph loaded successfully!");
+                } else {
+                    throw new Error('Invalid graph format');
+                }
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+                alert('Failed to load graph. Please check the URL and try again.');
+            }
+        }
+    });
     
 };
 

@@ -106,6 +106,11 @@ class DirectedGraph extends BaseGraph {
 
         return this.positions;
     }
+    clear() {
+        this.nodes = [];
+        this.edges.clear();
+        this.positions = {};
+    }
 }
 
 const directedGraph = new DirectedGraph();

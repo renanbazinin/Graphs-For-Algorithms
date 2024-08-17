@@ -1,0 +1,26 @@
+{
+    "nodes": [
+      {"name": "Get Permits", "x": 100, "y": 50},
+      {"name": "Lay Foundation", "x": 300, "y": 50},
+      {"name": "Build Walls", "x": 500, "y": 50},
+      {"name": "Install Roof", "x": 700, "y": 50},
+      {"name": "Install Windows", "x": 300, "y": 150},
+      {"name": "Install Doors", "x": 500, "y": 150},
+      {"name": "Paint House", "x": 700, "y": 150},
+      {"name": "Inspect House", "x": 500, "y": 250},
+      {"name": "Move In", "x": 700, "y": 250}
+    ],
+    "edges": [
+      {"from": "Get Permits", "to": "Lay Foundation"},
+      {"from": "Lay Foundation", "to": "Build Walls"},
+      {"from": "Build Walls", "to": "Install Roof"},
+      {"from": "Build Walls", "to": "Install Windows"},
+      {"from": "Build Walls", "to": "Install Doors"},
+      {"from": "Install Roof", "to": "Paint House"},
+      {"from": "Install Windows", "to": "Paint House"},
+      {"from": "Install Doors", "to": "Paint House"},
+      {"from": "Paint House", "to": "Inspect House"},
+      {"from": "Inspect House", "to": "Move In"}
+    ]
+  }
+  
