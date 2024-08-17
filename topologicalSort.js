@@ -215,7 +215,7 @@ window.onload = function() {
                 if (node.length > 4) {
                     headerCell.style.fontSize = '0.6rem'; // Smaller font for longer names
                 } else if (node.length > 5) {
-                    headerCell.style.fontSize = '0.5rem'; // Even smaller for very long names
+                    headerCell.style.fontSize = '0.6rem'; // Even smaller for very long names
                 } else {
                     headerCell.style.fontSize = '0.7rem'; // Default size for shorter names
                 }
@@ -402,4 +402,36 @@ window.onload = function() {
 
     rtlTextButton.addEventListener('click', () => toggleTextDirection('rtl'));
     ltrTextButton.addEventListener('click', () => toggleTextDirection('ltr'));
+
+    const graphURL = 'C:\\Users\\renan\\Documents\\nodeStuff\\graphs\\graphInJson\\pizza.json'; // Replace with your URL
+    document.getElementById('loadFromURLButton').addEventListener('click', () => loadGraphFromURL(graphURL));
 };
+
+async function loadGraphFromURL(url) {
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        // Clear the existing graph
+        graph.nodes = [];
+        graph.edges.clear();
+
+        // Add nodes
+        data.nodes.forEach(node => {
+            graph.addNode(node.name, node.x, node.y);
+        });
+
+        // Add edges
+        data.edges.forEach(edge => {
+            graph.addEdge(edge.from, edge.to);
+        });
+
+        // Redraw the graph
+        visualizer = new TopologicalSortVisualizer(graph, canvas, ctx);
+        visualizer.initialize();
+
+        console.log('Graph loaded successfully from URL');
+    } catch (error) {
+        console.error('Error loading graph from URL:', error);
+    }
+}

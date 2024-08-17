@@ -8,7 +8,7 @@ body {
     justify-content: center;
     min-height: 100vh;
     margin: 0;
-    padding: 20px;
+    padding: 2px;
     box-sizing: border-box;
     padding-bottom: 80px; /* Add padding to the bottom */
 
@@ -16,13 +16,13 @@ body {
 
 h1, h2 {
     text-align: center;
-    margin: 10px 0;
+    margin: 2px 0;
 }
 
 canvas {
     border: 1px solid #e0e0e0;
     background-color: #2b2b2b; /* Lighter background color for the canvas */
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     width: 100%;
     height: auto;
     display: block;
@@ -326,7 +326,7 @@ pre {
 }
 
 #visualizerInfo {
-    margin-top: 20px;
+    margin-top: 2px;
     text-align: center; /* Center text alignment */
     width: 100%;
     display: flex;

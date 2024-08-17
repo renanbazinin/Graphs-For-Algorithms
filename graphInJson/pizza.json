@@ -1,0 +1,24 @@
+{
+    "nodes": [
+      {"name": "Get ingredients", "x": 100, "y": 100},
+      {"name": "Prepare dough", "x": 300, "y": 100},
+      {"name": "Spread dough", "x": 500, "y": 100},
+      {"name": "Add sauce", "x": 700, "y": 100},
+      {"name": "Add toppings", "x": 900, "y": 100},
+      {"name": "Preheat oven", "x": 500, "y": 300},
+      {"name": "Bake pizza", "x": 700, "y": 300},
+      {"name": "Slice pizza", "x": 900, "y": 300},
+      {"name": "Serve pizza", "x": 1100, "y": 300}
+    ],
+    "edges": [
+      {"from": "Get ingredients", "to": "Prepare dough"},
+      {"from": "Prepare dough", "to": "Spread dough"},
+      {"from": "Spread dough", "to": "Add sauce"},
+      {"from": "Add sauce", "to": "Add toppings"},
+      {"from": "Add toppings", "to": "Bake pizza"},
+      {"from": "Preheat oven", "to": "Bake pizza"},
+      {"from": "Bake pizza", "to": "Slice pizza"},
+      {"from": "Slice pizza", "to": "Serve pizza"}
+    ]
+  }
+  
