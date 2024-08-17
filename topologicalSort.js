@@ -192,7 +192,7 @@ window.onload = function() {
             this.ctx.fillStyle = '#1e1e1e';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
-            this.ctx.font = `${this.graph.radius / 2}px Arial`;
+            this.ctx.font = `${this.graph.radius / 3.5}px Arial`;
             this.ctx.fillText(node, pos.x, pos.y);
         }
 
@@ -403,7 +403,7 @@ window.onload = function() {
     rtlTextButton.addEventListener('click', () => toggleTextDirection('rtl'));
     ltrTextButton.addEventListener('click', () => toggleTextDirection('ltr'));
 
-    const graphURL = 'https://raw.githubusercontent.com/renanbazinin/Graphs-For-Algorithms/main/graphInJson/courses.json'; // Replace with your URL
+    const graphURL = 'https://raw.githubusercontent.com/renanbazinin/Graphs-For-Algorithms/main/graphInJson/management.json'; // Replace with your URL
     document.getElementById('loadFromURLButton').addEventListener('click', () => loadGraphFromURL(graphURL));
 
     async function loadGraphFromURL(url) {
