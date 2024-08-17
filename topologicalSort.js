@@ -403,7 +403,7 @@ window.onload = function() {
     rtlTextButton.addEventListener('click', () => toggleTextDirection('rtl'));
     ltrTextButton.addEventListener('click', () => toggleTextDirection('ltr'));
 
-    const graphURL = 'https://raw.githubusercontent.com/renanbazinin/Graphs-For-Algorithms/main/graphInJson/pizza.json'; // Replace with your URL
+    const graphURL = 'https://raw.githubusercontent.com/renanbazinin/Graphs-For-Algorithms/main/graphInJson/courses.json'; // Replace with your URL
     document.getElementById('loadFromURLButton').addEventListener('click', () => loadGraphFromURL(graphURL));
 
     async function loadGraphFromURL(url) {

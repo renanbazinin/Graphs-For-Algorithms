@@ -1,0 +1,22 @@
+{
+    "nodes": [
+      {"name": "Book Venue", "x": 100, "y": 100},
+      {"name": "Send Invitations", "x": 300, "y": 100},
+      {"name": "Arrange Catering", "x": 100, "y": 300},
+      {"name": "Hire a Speaker", "x": 500, "y": 100},
+      {"name": "Prepare Presentation", "x": 300, "y": 300},
+      {"name": "Set Up AV Equipment", "x": 100, "y": 500},
+      {"name": "Event Day Coordination", "x": 300, "y": 500}
+    ],
+    "edges": [
+      {"from": "Book Venue", "to": "Send Invitations"},
+      {"from": "Book Venue", "to": "Arrange Catering"},
+      {"from": "Book Venue", "to": "Set Up AV Equipment"},
+      {"from": "Hire a Speaker", "to": "Prepare Presentation"},
+      {"from": "Hire a Speaker", "to": "Send Invitations"},
+      {"from": "Arrange Catering", "to": "Event Day Coordination"},
+      {"from": "Prepare Presentation", "to": "Event Day Coordination"},
+      {"from": "Set Up AV Equipment", "to": "Event Day Coordination"}
+    ]
+  }
+  
