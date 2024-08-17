@@ -228,11 +228,11 @@ window.onload = function() {
                 // Dynamically adjust font size based on node name length
                 console.log(node.length)
                 if (node.length > 4) {
-                    headerCell.style.fontSize = '0.4rem'; // Smaller font for longer names
+                    headerCell.style.fontSize = '0.9rem'; // Smaller font for longer names
                 } else if (node.length > 6) {
-                    headerCell.style.fontSize = '0.5rem'; // Even smaller for very long names
+                    headerCell.style.fontSize = '0.8rem'; // Even smaller for very long names
                 } else {
-                    headerCell.style.fontSize = '0.6rem'; // Default size for shorter names
+                    headerCell.style.fontSize = '0.7rem'; // Default size for shorter names
                 }
         
                 indegreeTableHeaderRow.appendChild(headerCell);
