@@ -1,0 +1,27 @@
+{
+    "nodes": [
+      {"name": "Choose Destination", "x": 200, "y": 50},
+      {"name": "Book Flights", "x": 400, "y": 150},
+      {"name": "Book Accommodation", "x": 600, "y": 150},
+      {"name": "Apply for Visa", "x": 200, "y": 250},
+      {"name": "Pack Luggage", "x": 400, "y": 350},
+      {"name": "Plan Itinerary", "x": 600, "y": 350},
+      {"name": "Buy Travel Insurance", "x": 200, "y": 450},
+      {"name": "Exchange Currency", "x": 400, "y": 550},
+      {"name": "Travel", "x": 600, "y": 550}
+    ],
+    "edges": [
+      {"from": "Choose Destination", "to": "Book Flights"},
+      {"from": "Choose Destination", "to": "Book Accommodation"},
+      {"from": "Choose Destination", "to": "Apply for Visa"},
+      {"from": "Apply for Visa", "to": "Travel"},
+      {"from": "Book Flights", "to": "Travel"},
+      {"from": "Book Accommodation", "to": "Travel"},
+      {"from": "Book Flights", "to": "Pack Luggage"},
+      {"from": "Pack Luggage", "to": "Travel"},
+      {"from": "Plan Itinerary", "to": "Travel"},
+      {"from": "Buy Travel Insurance", "to": "Travel"},
+      {"from": "Exchange Currency", "to": "Travel"}
+    ]
+  }
+  

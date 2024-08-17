@@ -181,7 +181,22 @@ window.onload = function() {
         }
 
         highlightNode(node) {
+
             const pos = this.graph.positions[node];
+            const nodeNameLength = node.length;
+            let fontSize;
+            if (nodeNameLength <= 4) {
+                fontSize = this.graph.radius / 2;  // Larger font for short names
+            } else if (nodeNameLength <= 8) {
+                fontSize = this.graph.radius / 2.6;  //
+            } else if (nodeNameLength <= 10) {
+                fontSize = this.graph.radius / 3.5;  // 
+            }
+            else{
+                fontSize = this.graph.radius / 5.5;  
+
+            }
+
             this.ctx.beginPath();
             this.ctx.arc(pos.x, pos.y, this.graph.radius, 0, 2 * Math.PI);
             this.ctx.fillStyle = 'yellow';
@@ -192,7 +207,7 @@ window.onload = function() {
             this.ctx.fillStyle = '#1e1e1e';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
-            this.ctx.font = `${this.graph.radius / 3.5}px Arial`;
+            this.ctx.font = `${fontSize}px Arial`;
             this.ctx.fillText(node, pos.x, pos.y);
         }
 
@@ -213,11 +228,11 @@ window.onload = function() {
                 // Dynamically adjust font size based on node name length
                 console.log(node.length)
                 if (node.length > 4) {
-                    headerCell.style.fontSize = '0.6rem'; // Smaller font for longer names
-                } else if (node.length > 5) {
-                    headerCell.style.fontSize = '0.6rem'; // Even smaller for very long names
+                    headerCell.style.fontSize = '0.4rem'; // Smaller font for longer names
+                } else if (node.length > 6) {
+                    headerCell.style.fontSize = '0.5rem'; // Even smaller for very long names
                 } else {
-                    headerCell.style.fontSize = '0.7rem'; // Default size for shorter names
+                    headerCell.style.fontSize = '0.6rem'; // Default size for shorter names
                 }
         
                 indegreeTableHeaderRow.appendChild(headerCell);
@@ -403,7 +418,7 @@ window.onload = function() {
     rtlTextButton.addEventListener('click', () => toggleTextDirection('rtl'));
     ltrTextButton.addEventListener('click', () => toggleTextDirection('ltr'));
 
-    const graphURL = 'https://raw.githubusercontent.com/renanbazinin/Graphs-For-Algorithms/main/graphInJson/management.json'; // Replace with your URL
+    const graphURL = 'https://raw.githubusercontent.com/renanbazinin/Graphs-For-Algorithms/main/graphInJson/courses.json'; // Replace with your URL
     document.getElementById('loadFromURLButton').addEventListener('click', () => loadGraphFromURL(graphURL));
 
     async function loadGraphFromURL(url) {
