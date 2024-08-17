@@ -80,24 +80,24 @@ Start now: https://renanbazinin.github.io/Graphs-For-Algorithms/
 
    You can also load graphs from a URL containing a JSON file. The JSON should follow this format:
 
-   ```json
-   {
-   "nodes": [
-      {"name": "Node1", "x": 100, "y": 100},
-      {"name": "Node2", "x": 200, "y": 200}
-   ],
-   "edges": [
-      {"from": "Node1", "to": "Node2"}
-   ]
-   }
+### Loading Graphs from URL
+
+You can also load graphs from a URL containing a JSON file. The JSON should follow this format:
+
+{
+  "nodes": [
+    {"name": "Node1", "x": 100, "y": 100},
+    {"name": "Node2", "x": 200, "y": 200}
+  ],
+  "edges": [
+    {"from": "Node1", "to": "Node2"}
+  ]
+}
 ### Customizing the Experience
 
 - Modify `styles.css` to tweak the appearance.
 - Extend the functionality by adding more algorithms in JavaScript.
 
-## 📜 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
 ## 🤝 Contributing
 
