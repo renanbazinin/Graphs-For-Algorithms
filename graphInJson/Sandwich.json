@@ -1,0 +1,29 @@
+{
+    "nodes": [
+      {"name": "Get bread", "x": 150, "y": 50},
+      {"name": "Spread butter", "x": 400, "y": 50},
+      {"name": "Add lettuce", "x": 150, "y": 150},
+      {"name": "Add cheese", "x": 400, "y": 150},
+      {"name": "Add tomatoes", "x": 150, "y": 250},
+      {"name": "Add ham", "x": 400, "y": 250},
+      {"name": "Close sandwich", "x": 150, "y": 350},
+      {"name": "Cut sandwich", "x": 400, "y": 350},
+      {"name": "Serve", "x": 150, "y": 450},
+      {"name": "Enjoy", "x": 400, "y": 450}
+    ],
+    "edges": [
+      {"from": "Get bread", "to": "Spread butter"},
+      {"from": "Get bread", "to": "Add lettuce"},
+      {"from": "Spread butter", "to": "Add cheese"},
+      {"from": "Spread butter", "to": "Add tomatoes"},
+      {"from": "Add lettuce", "to": "Add cheese"},
+      {"from": "Add lettuce", "to": "Add tomatoes"},
+      {"from": "Add cheese", "to": "Add ham"},
+      {"from": "Add tomatoes", "to": "Add ham"},
+      {"from": "Add ham", "to": "Close sandwich"},
+      {"from": "Close sandwich", "to": "Cut sandwich"},
+      {"from": "Cut sandwich", "to": "Serve"},
+      {"from": "Serve", "to": "Enjoy"}
+    ]
+  }
+  
