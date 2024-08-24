@@ -208,7 +208,7 @@ class DFSVisualizer {
         });
 
         this.graph.draw(this.ctx);
-        this.ctx.fillStyle =  '#ffffff'; // Default to white if color is not set
+        //this.ctx.fillStyle =  '#ffffff'; // Default to white if color is not set
 
     }
 

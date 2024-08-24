@@ -6,7 +6,6 @@
     <title>BFS Visualizer</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="stylesNew.css">
-
 </head>
 <body>
     <h1>BFS Visualizer</h1>
@@ -31,13 +30,19 @@
             <button id="startButton">Start BFS Visualization</button>
             <label for="nodeSelector">Choose Starting Node:</label>
             <select id="nodeSelector"></select>
+   
+    
+            <button id="nextButton">Next Step</button>
+            <button id="undoButton">Undo Step</button>
         </div>
     </div>
 
     <div id="visualizerInfo">
         <h2>Current State:</h2>
         <div id="distanceArray">Distance Array: </div>
+        <div id="queue">Current Queue: </div> 
     </div>
+    
 
     <!-- Import Graph Modal -->
     <div id="importGraphModal" class="modal">
@@ -53,6 +58,8 @@
         <button onclick="window.location.href='index.html'">Home</button>
         <button onclick="window.location.href='things.html'">Topological Sort</button>
         <button onclick="window.location.href='DFSVisualizer.html'">DFS</button>
+        <button onclick="window.location.href='bfs.html'">BFS</button>
+        <button onclick="window.location.href='SCCVisualizer.html'">SCC</button>
     </footer>
 
     <script src="baseGraph.js"></script>
