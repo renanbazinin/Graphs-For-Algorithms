@@ -60,3 +60,28 @@
 #loadGraphButton:hover {
     background-color: #555;
 }
+
+#graphURLInput {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+#loadGraphFromURLButton {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #444;
+    color: #e0e0e0;
+    border: 1px solid #555;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#loadGraphFromURLButton:hover {
+    background-color: #555;
+}

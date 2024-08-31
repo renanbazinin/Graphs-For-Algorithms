@@ -11,7 +11,7 @@ body {
     padding: 2px;
     box-sizing: border-box;
     padding-bottom: 80px; /* Add padding to the bottom */
-
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 h1, h2 {
@@ -55,14 +55,12 @@ button:active {
     transform: translateY(1px);
 }
 
-#undirectedGraph, #directedGraph, #canvasContainer  {
+#undirectedGraph, #directedGraph, #canvasContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
-
     overflow: hidden; /* Hide any potential overflow */
-
 }
 
 pre {
@@ -135,7 +133,6 @@ pre {
     vertical-align: middle; /* Vertically center the text */
 }
 
-
 #indegreeList {
     width: auto;
     text-align: center;
@@ -148,11 +145,7 @@ pre {
     border: 1px solid #444;
     margin-top: 10px;
     width: 100%;
-    
 }
-
-
-
 
 #buttonContainer {
     display: flex;
@@ -161,8 +154,6 @@ pre {
     flex-wrap: wrap; /* Wrap buttons if there's not enough space */
     gap: 10px; /* Add spacing between the buttons */
     margin-bottom: 20px; /* Add some space below the button container */
-
-    
 }
 
 #directionButtonContainer button {
@@ -196,7 +187,6 @@ pre {
     direction: rtl; /* Default direction is RTL */
 }
 
-/* Footer Styles */
 /* Footer Styles */
 #footer {
     background-color: rgba(43, 43, 43, 0.8); /* Dark background with transparency */
@@ -302,27 +292,17 @@ pre {
 
 #controlsContainer {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column; /* Stack controls vertically on small screens */
     width: 100%;
     margin-bottom: 20px;
 }
 
 #stepControls, #resizeControls {
     display: flex;
+    flex-wrap: wrap; /* Allow wrapping of controls */
     gap: 10px;
-}
-
-#stepControls {
-    display: flex;
-    justify-content: center; /* Center the step control buttons */
-    gap: 10px;
+    justify-content: center; /* Center controls horizontally */
     width: 100%; /* Ensure the container takes up the full width */
-}
-
-#resizeControls {
-    display: flex;
-    justify-content: center; /* Center the resize buttons */
-    gap: 10px;
 }
 
 #visualizerInfo {

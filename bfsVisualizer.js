@@ -6,9 +6,6 @@ class BFSVisualizer {
         this.distanceArray = [];
         this.queue = [];
         this.previousStates = [];
-        this.selectedNode = null;
-        this.offsetX = 0;
-        this.offsetY = 0;
         this.currentNode = null; // To keep track of the current node being processed
     }
 
@@ -98,7 +95,6 @@ class BFSVisualizer {
         this.ctx.arc(pos.x, pos.y, this.graph.radius, 0, 2 * Math.PI);
         this.ctx.fillStyle = isCurrent ? 'blue' : '#1e1e1e'; // Highlight the current node in blue
         this.ctx.fill();
-        //this.ctx.strokeStyle = 'orange';
         this.ctx.stroke();
 
         this.ctx.fillStyle = 'white';
@@ -118,66 +114,6 @@ class BFSVisualizer {
         }
         this.ctx.font = `${fontSize}px Arial`;
         this.ctx.fillText(node, pos.x, pos.y);
-    }
-
-    handleMouseDown(event) {
-        const rect = this.canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        for (const [node, pos] of Object.entries(this.graph.positions)) {
-            const distance = Math.sqrt((pos.x - x) ** 2 + (pos.y - y) ** 2);
-            if (distance <= this.graph.radius) {
-                this.selectedNode = node;
-                this.offsetX = pos.x - x;
-                this.offsetY = pos.y - y;
-                break;
-            }
-        }
-    }
-
-    handleMouseMove(event) {
-        if (this.selectedNode) {
-            const rect = this.canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left + this.offsetX;
-            const y = event.clientY - rect.top + this.offsetY;
-
-            this.graph.positions[this.selectedNode] = { x, y };
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.graph.draw(this.ctx);
-
-            this.graph.nodes.forEach(node => {
-                this.highlightNode(node, this.currentNode === node);
-            });
-        }
-    }
-
-    handleMouseUp() {
-        this.selectedNode = null;
-    }
-
-    handleTouchStart(event) {
-        event.preventDefault();
-        const touch = event.touches[0];
-        this.handleMouseDown({
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            target: this.canvas,
-        });
-    }
-
-    handleTouchMove(event) {
-        event.preventDefault();
-        const touch = event.touches[0];
-        this.handleMouseMove({
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            target: this.canvas,
-        });
-    }
-
-    handleTouchEnd() {
-        this.handleMouseUp();
     }
 
     loadGraphFromText(text) {
@@ -289,11 +225,12 @@ window.onload = function() {
         visualizer.updateNodeSelector();
     }
 
-    canvas.addEventListener('mousedown', (event) => visualizer.handleMouseDown(event));
-    canvas.addEventListener('mousemove', (event) => visualizer.handleMouseMove(event));
-    canvas.addEventListener('mouseup', () => visualizer.handleMouseUp());
+    // Use the baseGraph's touch and mouse handlers for dragging nodes
+    canvas.addEventListener('mousedown', (event) => graph.handleMouseDown(event, canvas, ctx));
+    canvas.addEventListener('mousemove', (event) => graph.handleMouseMove(event, canvas, ctx));
+    canvas.addEventListener('mouseup', () => graph.handleMouseUp());
 
-    canvas.addEventListener('touchstart', (event) => visualizer.handleTouchStart(event), { passive: false });
-    canvas.addEventListener('touchmove', (event) => visualizer.handleTouchMove(event), { passive: false });
-    canvas.addEventListener('touchend', () => visualizer.handleTouchEnd(), { passive: false });
+    canvas.addEventListener('touchstart', (event) => graph.handleTouchStart(event, canvas, ctx), { passive: false });
+    canvas.addEventListener('touchmove', (event) => graph.handleTouchMove(event, canvas, ctx), { passive: false });
+    canvas.addEventListener('touchend', () => graph.handleTouchEnd(), { passive: false });
 };

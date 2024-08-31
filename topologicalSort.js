@@ -283,6 +283,8 @@ window.onload = function() {
             visualizer = new TopologicalSortVisualizer(graph, canvas, ctx);
             visualizer.initialize();
         }
+        visualizer = new TopologicalSortVisualizer(graph, canvas, ctx);
+        visualizer.initialize();
     }
     
 
@@ -419,86 +421,73 @@ window.onload = function() {
     ltrTextButton.addEventListener('click', () => toggleTextDirection('ltr'));
 
     let graphURL = 'https://raw.githubusercontent.com/renanbazinin/Graphs-For-Algorithms/main/graphInJson/vacation.json'; // Replace with your URL
-    document.getElementById('loadFromURLButton').addEventListener('click', () => loadGraphFromURL(graphURL));
 
-    async function loadGraphFromURL(url) {
+   
+
+   
+    // Event listener to open the Load from URL modal
+document.getElementById('loadFromURLButton').addEventListener('click', () => {
+    const loadFromURLModal = document.getElementById('loadFromURLModal');
+    loadFromURLModal.style.display = 'flex';
+});
+
+// Event listener to close the Load from URL modal
+document.getElementById('closeURLModalButton').addEventListener('click', () => {
+    const loadFromURLModal = document.getElementById('loadFromURLModal');
+    loadFromURLModal.style.display = 'none';
+});
+
+// Close the modal when clicking outside of it
+window.addEventListener('click', (event) => {
+    const loadFromURLModal = document.getElementById('loadFromURLModal');
+    if (event.target == loadFromURLModal) {
+        loadFromURLModal.style.display = 'none';
+    }
+});
+
+// Event listener to load the graph from the entered URL
+document.getElementById('loadGraphFromURLButton').addEventListener('click', async () => {
+    const graphURLInput = document.getElementById('graphURLInput').value.trim();
+    const loadFromURLModal = document.getElementById('loadFromURLModal');
+
+    if (graphURLInput) {
         try {
-            const response = await fetch(url);
-            const data = await response.json();
-    
-            // Clear the existing graph
-            graph.nodes = [];
-            graph.edges.clear();
-    
-            // Add nodes
-            data.nodes.forEach(node => {
-                graph.addNode(node.name, node.x, node.y);
-            });
-    
-            // Add edges
-            data.edges.forEach(edge => {
-                graph.addEdge(edge.from, edge.to);
-            });
-    
-            // Redraw the graph
-            visualizer = new TopologicalSortVisualizer(graph, canvas, ctx);
-            visualizer.initialize();
-    
-            console.log('Graph loaded successfully from URL');
+            const response = await fetch(graphURLInput);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const graphData = await response.json();
+
+            if (graphData.nodes && graphData.edges) {
+                graph.clear();
+
+                graphData.nodes.forEach(node => {
+                    graph.addNode(node.name, node.x, node.y);
+                });
+
+                graphData.edges.forEach(edge => {
+                    graph.addEdge(edge.from, edge.to);
+                });
+
+                if (visualizer) {
+                    visualizer.graph = graph;
+                    visualizer.initialize();
+                } else {
+                    visualizer = new TopologicalSortVisualizer(graph, canvas, ctx);
+                    visualizer.initialize();
+                }
+                visualizer = new TopologicalSortVisualizer(graph, canvas, ctx);
+                visualizer.initialize();
+                loadFromURLModal.style.display = 'none';
+            } else {
+                throw new Error('Invalid graph format');
+            }
         } catch (error) {
-            console.error('Error loading graph from URL:', error);
+            console.error('There was a problem with the fetch operation:', error);
+            alert('Failed to load graph. Please check the URL and try again.');
         }
     }
+});
 
-
-    document.getElementById('loadFromURLButton').addEventListener('click', async () => {
-        // Prompt the user for the URL
-        let graphURL = prompt("Please enter the URL of the graph JSON:");
-    
-        if (graphURL) {
-            try {
-                // Fetch the JSON data from the URL
-                let response = await fetch(graphURL);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-    
-                let graphData = await response.json();
-    
-                // Ensure the graphData has the necessary structure
-                if (graphData.nodes && graphData.edges) {
-                    // Clear the existing graph
-                    graph.clear();
-    
-                    // Add nodes to the graph
-                    graphData.nodes.forEach(node => {
-                        graph.addNode(node.name, node.x, node.y);
-                    });
-    
-                    // Add edges to the graph
-                    graphData.edges.forEach(edge => {
-                        graph.addEdge(edge.from, edge.to);
-                    });
-    
-                    // Reinitialize the visualizer with the new graph data
-                    if (visualizer) {
-                        visualizer.graph = graph;
-                        visualizer.initialize();
-                    } else {
-                        visualizer = new TopologicalSortVisualizer(graph, canvas, ctx);
-                        visualizer.initialize();
-                    }
-    
-                    alert("Graph loaded successfully!");
-                } else {
-                    throw new Error('Invalid graph format');
-                }
-            } catch (error) {
-                console.error('There was a problem with the fetch operation:', error);
-                alert('Failed to load graph. Please check the URL and try again.');
-            }
-        }
-    });
-    
 };
-

@@ -68,7 +68,14 @@
             <button id="loadGraphButton">Load Graph</button>
         </div>
     </div>
-    
+    <div id="loadFromURLModal" class="modal">
+        <div class="modal-content">
+            <span id="closeURLModalButton" class="close">&times;</span>
+            <h2>Load Graph from URL</h2>
+            <input type="text" id="graphURLInput" placeholder="Enter the URL of the graph JSON...">
+            <button id="loadGraphFromURLButton">Load Graph</button>
+        </div>
+    </div>
     <footer id="footer">
         <button onclick="window.location.href='index.html'">Home</button>
         <button onclick="window.location.href='things.html'">Topological Sort</button>
@@ -77,6 +84,7 @@
 
         <button onclick="window.location.href='SCCVisualizer.html'">SCC</button>
     </footer>
+
     <script src="baseGraph.js"></script>
     <script src="directedGraph.js"></script>
     <script src="topologicalSort.js"></script>

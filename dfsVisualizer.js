@@ -7,15 +7,10 @@ class DFSVisualizer {
         this.delay = delay; // Delay in milliseconds
         this.visitedNodes = []; // To store the visited nodes in sequence
         this.finishedNodes = []; // To store the finished nodes in sequence
-
-
         this.edgeTypes = new Map(); // Store the edge types with colors
-        this.selectedNode = null; // To keep track of the node being moved
-        this.offsetX = 0;
-        this.offsetY = 0;
     }
+
     async startDFS() {
-        // Initialize al  async startDFS() {
         // Initialize all nodes to white (unprocessed)
         this.graph.nodes.forEach(node => {
             this.colors.set(node, 'white');
@@ -23,7 +18,6 @@ class DFSVisualizer {
 
         this.edgeTypes.clear(); // Clear previous edge types
         this.finishedNodes = []; // Reset finished nodes
-
         this.visitedNodes = []; // Reset visited nodes
         this.clearBracketLinearTable(); // Clear the table for a new visualization
 
@@ -36,6 +30,7 @@ class DFSVisualizer {
 
         this.highlightGraph(); // Highlight the final graph with all edges colored
     }
+
     resetVisualization() {
         // Reset all state variables
         this.colors.clear();
@@ -50,6 +45,7 @@ class DFSVisualizer {
         // Redraw the graph
         this.graph.draw(this.ctx);
     }
+
     async dfsVisit(node) {
         this.colors.set(node, 'gray'); // Mark the node as gray (in progress)
         this.visitedNodes.push(node); // Add node to visited nodes list
@@ -67,7 +63,6 @@ class DFSVisualizer {
             } else if (this.colors.get(neighbor) === 'gray') {
                 this.edgeTypes.set(`${node}->${neighbor}`, 'back'); // Back Edge
             } else if (this.colors.get(neighbor) === 'black') {
-                // If the neighbor is already finished and it is a descendant of the current node, classify it as a forward edge
                 if (this.visitedNodes.includes(neighbor)) {
                     this.edgeTypes.set(`${node}->${neighbor}`, 'forward'); // Forward Edge
                 } else {
@@ -77,7 +72,6 @@ class DFSVisualizer {
             this.highlightGraph();
             await this.sleep(this.delay);
         }
-        
     
         this.colors.set(node, 'black'); // Mark the node as black (finished)
         this.finishedNodes.push(node); // Add node to finished nodes list
@@ -87,7 +81,6 @@ class DFSVisualizer {
         this.highlightGraph();
         await this.sleep(this.delay);
     }
-    
 
     highlightGraph() {
         this.graph.draw(this.ctx);
@@ -119,7 +112,6 @@ class DFSVisualizer {
         this.ctx.stroke();
     
         this.ctx.fillStyle = '#ef2e24';
-
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         this.ctx.font = `${this.graph.radius / 2}px Arial`;
@@ -178,7 +170,6 @@ class DFSVisualizer {
 
         visitedNodesList.innerText = `Visited Nodes: ${this.visitedNodes.join(' -> ')}`;
         finishedNodesList.innerText = `Finished Nodes: ${this.finishedNodes.join(' -> ')}`;
-
     }
 
     sleep(ms) {
@@ -208,8 +199,6 @@ class DFSVisualizer {
         });
 
         this.graph.draw(this.ctx);
-        //this.ctx.fillStyle =  '#ffffff'; // Default to white if color is not set
-
     }
 
     loadClassicExample() {
@@ -232,8 +221,6 @@ class DFSVisualizer {
         this.graph.addEdge('e', 'f');
 
         this.graph.draw(this.ctx);
-        this.ctx.fillStyle =  '#ffffff'; // Default to white if color is not set
-
     }
 
     resizeCanvas(factor) {
@@ -244,77 +231,8 @@ class DFSVisualizer {
             this.canvas.width = newWidth;
             this.canvas.height = newHeight;
             this.graph.draw(this.ctx);
-            this.highlightGraph();
         }
     }
-    handleMouseDown(event) {
-        const rect = this.canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        for (const [node, pos] of Object.entries(this.graph.positions)) {
-            const distance = Math.sqrt((pos.x - x) ** 2 + (pos.y - y) ** 2);
-            if (distance <= this.graph.radius) {
-                this.selectedNode = node;
-                this.offsetX = pos.x - x;
-                this.offsetY = pos.y - y;
-                break;
-            }
-        }
-    }
-
-    // Method to handle mouse move event
-        handleMouseMove(event) {
-            if (this.selectedNode) {
-                const rect = this.canvas.getBoundingClientRect();
-                const x = event.clientX - rect.left + this.offsetX;
-                const y = event.clientY - rect.top + this.offsetY;
-
-                this.graph.positions[this.selectedNode] = { x, y };
-                this.graph.draw(this.ctx);
-
-                // Redraw all nodes without changing their color state
-                for (const node of this.graph.nodes) {
-                    this.highlightNode(node);
-                }
-            }
-        }
-
-    // Method to handle mouse up event
-    handleMouseUp() {
-        this.selectedNode = null;
-    }
-
-    // Method to handle touch start event
-    handleTouchStart(event) {
-        event.preventDefault();
-        const touch = event.touches[0];
-        this.handleMouseDown({
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            target: this.canvas,
-        });
-    }
-
-    // Method to handle touch move event
-    handleTouchMove(event) {
-        event.preventDefault();
-        const touch = event.touches[0];
-        this.handleMouseMove({
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            target: this.canvas,
-        });
-    }
-
-    // Method to handle touch end event
-    handleTouchEnd() {
-        this.handleMouseUp();
-    }
-
-
-    
-
 }
 
 window.onload = function() {
@@ -358,15 +276,15 @@ window.onload = function() {
         visualizer.loadClassicExample();
     });
 
-    canvas.addEventListener('mousedown', (event) => visualizer.handleMouseDown(event));
-    canvas.addEventListener('mousemove', (event) => visualizer.handleMouseMove(event));
-    canvas.addEventListener('mouseup', () => visualizer.handleMouseUp());
+    // Use the baseGraph's touch and mouse handlers for dragging nodes
+    canvas.addEventListener('mousedown', (event) => graph.handleMouseDown(event, canvas, ctx));
+    canvas.addEventListener('mousemove', (event) => graph.handleMouseMove(event, canvas, ctx));
+    canvas.addEventListener('mouseup', () => graph.handleMouseUp());
 
     // Bind touch events
-    canvas.addEventListener('touchstart', (event) => visualizer.handleTouchStart(event), { passive: false });
-    canvas.addEventListener('touchmove', (event) => visualizer.handleTouchMove(event), { passive: false });
-    canvas.addEventListener('touchend', () => visualizer.handleTouchEnd(), { passive: false });
-
+    canvas.addEventListener('touchstart', (event) => graph.handleTouchStart(event, canvas, ctx), { passive: false });
+    canvas.addEventListener('touchmove', (event) => graph.handleTouchMove(event, canvas, ctx), { passive: false });
+    canvas.addEventListener('touchend', () => graph.handleTouchEnd(), { passive: false });
 
     document.getElementById('moreSpaceButton').addEventListener('click', () => {
         visualizer.resizeCanvas(100);
@@ -376,8 +294,5 @@ window.onload = function() {
         visualizer.resizeCanvas(-100);
     });
 
-    visualizer.loadClassicExample()
+    visualizer.loadClassicExample();
 };
-
-
-

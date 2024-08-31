@@ -159,7 +159,7 @@ function addNodeLeftDirect() {
         directedGraph.draw(directedCtx);
     }
 }
-
+/*
 const resizeCanvas = (canvas, ctx, factor) => {
     const newWidth = canvas.width + factor;
     const newHeight = canvas.height + factor;
@@ -170,6 +170,17 @@ const resizeCanvas = (canvas, ctx, factor) => {
         directedGraph.draw(ctx);
     }
 };
+
+function resizeCanvas(canvas, factor) {
+    const newWidth = canvas.width + factor;
+    const newHeight = canvas.height + factor;
+
+    if (newWidth >= 400 && newHeight >= 300 && newWidth <= 1200 && newHeight <= 900) {
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+    }
+}
+    */
 
 document.getElementById('plusButton2').addEventListener('click', () => {
     resizeCanvas(directedCanvas, directedCtx, 100);
