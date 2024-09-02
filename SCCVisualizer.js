@@ -104,67 +104,27 @@ class SCCVisualizer {
     }
 
     handleMouseDown(event) {
-        const rect = this.canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        const targetGraph = this.superGraph || this.graph;
-
-        for (const [node, pos] of Object.entries(targetGraph.positions)) {
-            const distance = Math.sqrt((pos.x - x) ** 2 + (pos.y - y) ** 2);
-            if (distance <= targetGraph.radius) {
-                this.selectedNode = node;
-                this.offsetX = pos.x - x;
-                this.offsetY = pos.y - y;
-                break;
-            }
-        }
+        this.graph.handleMouseDown(event, this.canvas, this.ctx);
     }
 
     handleMouseMove(event) {
-        if (this.selectedNode) {
-            const rect = this.canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left + this.offsetX;
-            const y = event.clientY - rect.top + this.offsetY;
-
-            const targetGraph = this.superGraph || this.graph;
-
-            targetGraph.positions[this.selectedNode] = { x, y };
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            targetGraph.draw(this.ctx);
-
-            for (const node of targetGraph.nodes) {
-                this.highlightNode(node);
-            }
-        }
+        this.graph.handleMouseMove(event, this.canvas, this.ctx);
     }
 
     handleMouseUp() {
-        this.selectedNode = null;
+        this.graph.handleMouseUp();
     }
 
     handleTouchStart(event) {
-        event.preventDefault();
-        const touch = event.touches[0];
-        this.handleMouseDown({
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            target: this.canvas,
-        });
+        this.graph.handleTouchStart(event, this.canvas, this.ctx);
     }
 
     handleTouchMove(event) {
-        event.preventDefault();
-        const touch = event.touches[0];
-        this.handleMouseMove({
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            target: this.canvas,
-        });
+        this.graph.handleTouchMove(event, this.canvas, this.ctx);
     }
 
     handleTouchEnd() {
-        this.handleMouseUp();
+        this.graph.handleTouchEnd();
     }
 
     highlightNode(node) {
