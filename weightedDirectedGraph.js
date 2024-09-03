@@ -94,10 +94,12 @@ class WeightedDirectedGraph extends DirectedGraph {
     }
 
     getAdjacencyList() {
-        const adjacencyList = {};
+        let adjacencyList = '';
         this.edges.forEach((neighbors, node) => {
-            adjacencyList[node] = neighbors.map(({ node: neighbor, weight }) => `${neighbor}(${weight})`);
+            const neighborStrings = neighbors.map(({ node: neighbor, weight }) => `${neighbor}:${weight}`).join(', ');
+            adjacencyList += `${node} -> ${neighborStrings}\n`;
         });
-        return adjacencyList;
+        return adjacencyList.trim();
     }
+    
 }
