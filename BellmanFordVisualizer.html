@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bellman-Ford Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="stylesNew.css">
+</head>
+<body>
+    <h1>Bellman-Ford Visualizer</h1>
+
+    <div id="buttonContainer">
+        <div id="resizeControls">
+            <button id="moreSpaceButton">More Space</button>
+            <button id="lessSpaceButton">Less Space</button>
+        </div>
+        <button id="importGraphButton">Import Or Edit Graph</button>
+        <span>or</span>
+        <button id="loadClassicExampleButton">Import Instant Classic Example</button>
+    </div>
+
+    <div id="canvasContainer">
+        <canvas id="bellmanFordCanvas" width="800" height="600"></canvas>
+    </div>
+
+    <div id="controlsContainer">
+        <div id="stepControls">
+            <button id="resetButton">Reset Visualization</button>
+            <button id="startButton">Start Bellman-Ford Visualization</button>
+            <label for="nodeSelector">Choose Starting Node:</label>
+            <select id="nodeSelector"></select>
+            <button id="nextButton">Next Step</button>
+            <button id="undoButton">Undo Step</button>
+        </div>
+    </div>
+
+    <div id="visualizerInfo">
+        <h2>Current State:</h2>
+        <div id="distanceArray">Distance Array: </div>
+        <div id="predecessorArray">Predecessor Array: </div>
+    </div>
+
+    <!-- Import Graph Modal -->
+    <div id="importGraphModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModalButton" class="close">&times;</span>
+            <h2>Import or Edit Graph</h2>
+            <textarea id="graphInput" placeholder="Enter adjacency list with weights..."></textarea>
+            <button id="loadGraphButton">Load Graph</button>
+        </div>
+    </div>
+
+    <footer id="footer">
+        <button onclick="window.location.href='index.html'">Home</button>
+        <button onclick="window.location.href='things.html'">Topological Sort</button>
+        <button onclick="window.location.href='DFSVisualizer.html'">DFS</button>
+        <button onclick="window.location.href='bfs.html'">BFS</button>
+        <button onclick="window.location.href='SCCVisualizer.html'">SCC</button>
+    </footer>
+
+    <script src="baseGraph.js"></script>
+    <script src="directedGraph.js"></script>
+    <script src="bellmanFordVisualizer.js"></script>
+    <script src="weightedDirectedGraph.js"></script>
+</body>
+</html>
