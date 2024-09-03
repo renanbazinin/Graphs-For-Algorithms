@@ -7,9 +7,11 @@ class BellmanFordVisualizer {
         this.predecessorArray = new Map();
         this.steps = [];
         this.currentStep = 0;
+        this.currentRelaxationIndex = 0; // Track the current relaxation
         this.selectedNode = null;
         this.offsetX = 0;
         this.offsetY = 0;
+        this.relaxedNodes = new Set(); // Track the nodes being relaxed
     }
 
     initialize(startNode) {
@@ -18,6 +20,8 @@ class BellmanFordVisualizer {
         this.predecessorArray.clear();
         this.steps = [];
         this.currentStep = 0;
+        this.currentRelaxationIndex = 0; // Reset the relaxation index
+        this.relaxedNodes.clear();
 
         this.graph.nodes.forEach(node => {
             this.distanceArray.set(node, Infinity);
@@ -34,7 +38,8 @@ class BellmanFordVisualizer {
         this.steps.push({
             distanceArray: new Map(this.distanceArray),
             predecessorArray: new Map(this.predecessorArray),
-            currentStep: this.currentStep
+            currentStep: this.currentStep,
+            currentRelaxationIndex: this.currentRelaxationIndex,
         });
         console.log(`Step ${this.currentStep} recorded. Distance Array:`, this.distanceArray, 'Predecessor Array:', this.predecessorArray);
     }
@@ -46,21 +51,29 @@ class BellmanFordVisualizer {
             this.distanceArray = lastStep.distanceArray;
             this.predecessorArray = lastStep.predecessorArray;
             this.currentStep = lastStep.currentStep;
+            this.currentRelaxationIndex = lastStep.currentRelaxationIndex;
+            this.relaxedNodes.clear(); // Clear relaxed nodes when undoing
             this.updateUI();
             this.highlightGraph();
         }
     }
 
     async nextStep() {
-        if (this.currentStep < this.graph.nodes.length - 1) {
-            console.log(`Executing step ${this.currentStep + 1}`);
-            this.graph.edges.forEach((neighbors, u) => {
-                neighbors.forEach(({ node: v, weight }) => {
-                    this.relax(u, v, weight);
-                });
+        const edges = Array.from(this.graph.edges.entries());
+        if (this.currentStep < this.graph.nodes.length - 1 && this.currentRelaxationIndex < edges.length) {
+            const [u, neighbors] = edges[this.currentRelaxationIndex];
+            this.relaxedNodes.clear(); // Clear previous relaxed nodes
+            neighbors.forEach(({ node: v, weight }) => {
+                this.relax(u, v, weight);
             });
 
-            this.currentStep++;
+            this.currentRelaxationIndex++;
+
+            if (this.currentRelaxationIndex >= edges.length) {
+                this.currentRelaxationIndex = 0;
+                this.currentStep++;
+            }
+
             this.recordStep();
             this.updateUI();
             this.highlightGraph();
@@ -74,6 +87,8 @@ class BellmanFordVisualizer {
             console.log(`Relaxing edge (${u}, ${v}) with weight ${weight}`);
             this.distanceArray.set(v, this.distanceArray.get(u) + weight);
             this.predecessorArray.set(v, u);
+            this.relaxedNodes.add(u); // Mark nodes involved in relaxation
+            this.relaxedNodes.add(v);
         }
     }
 
@@ -97,12 +112,19 @@ class BellmanFordVisualizer {
         const pos = this.graph.positions[node];
         this.ctx.beginPath();
         this.ctx.arc(pos.x, pos.y, this.graph.radius, 0, 2 * Math.PI);
-        this.ctx.fillStyle = this.currentStep > 0 && this.steps.length ? '#FFD700' : '#1e1e1e'; // Highlight only after the first step
+
+        if (this.relaxedNodes.has(node)) {
+            this.ctx.fillStyle = '#FFD700'; // Highlight relaxed nodes in gold
+        } else {
+            this.ctx.fillStyle = '#1e1e1e'; // Default color for non-relaxed nodes
+        }
+
         this.ctx.fill();
         this.ctx.strokeStyle = '#ADD8E6';
         this.ctx.stroke();
+        this.ctx.fillStyle = '#FFFFFF'; // Set the text color to white
 
-        this.ctx.fillStyle = '#000000';
+        //this.ctx.fillStyle = '#000000';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         this.ctx.fillText(node, pos.x, pos.y);
@@ -202,6 +224,8 @@ class BellmanFordVisualizer {
         });
     }
 }
+
+
 
 window.onload = function() {
     const canvas = document.getElementById('bellmanFordCanvas');

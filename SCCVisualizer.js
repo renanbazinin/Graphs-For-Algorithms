@@ -104,27 +104,33 @@ class SCCVisualizer {
     }
 
     handleMouseDown(event) {
-        this.graph.handleMouseDown(event, this.canvas, this.ctx);
+        const activeGraph = this.superGraph || this.graph; // Use superGraph if it exists, otherwise the original graph
+        activeGraph.handleMouseDown(event, this.canvas, this.ctx);
     }
 
     handleMouseMove(event) {
-        this.graph.handleMouseMove(event, this.canvas, this.ctx);
+        const activeGraph = this.superGraph || this.graph;
+        activeGraph.handleMouseMove(event, this.canvas, this.ctx);
     }
 
     handleMouseUp() {
-        this.graph.handleMouseUp();
+        const activeGraph = this.superGraph || this.graph;
+        activeGraph.handleMouseUp();
     }
 
     handleTouchStart(event) {
-        this.graph.handleTouchStart(event, this.canvas, this.ctx);
+        const activeGraph = this.superGraph || this.graph;
+        activeGraph.handleTouchStart(event, this.canvas, this.ctx);
     }
 
     handleTouchMove(event) {
-        this.graph.handleTouchMove(event, this.canvas, this.ctx);
+        const activeGraph = this.superGraph || this.graph;
+        activeGraph.handleTouchMove(event, this.canvas, this.ctx);
     }
 
     handleTouchEnd() {
-        this.graph.handleTouchEnd();
+        const activeGraph = this.superGraph || this.graph;
+        activeGraph.handleTouchEnd();
     }
 
     highlightNode(node) {
@@ -135,7 +141,6 @@ class SCCVisualizer {
         this.ctx.fillText(node, pos.x, pos.y);
     }
 }
-
 window.onload = function() {
     const canvas = document.getElementById('sccCanvas');
     const ctx = canvas.getContext('2d');
