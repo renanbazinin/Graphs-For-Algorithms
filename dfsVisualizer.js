@@ -295,4 +295,7 @@ window.onload = function() {
     });
 
     visualizer.loadClassicExample();
+
+
+    
 };

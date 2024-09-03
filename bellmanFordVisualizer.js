@@ -8,9 +8,6 @@ class BellmanFordVisualizer {
         this.steps = [];
         this.currentStep = 0;
         this.currentRelaxationIndex = 0; // Track the current relaxation
-        this.selectedNode = null;
-        this.offsetX = 0;
-        this.offsetY = 0;
         this.relaxedNodes = new Set(); // Track the nodes being relaxed
     }
 
@@ -124,66 +121,33 @@ class BellmanFordVisualizer {
         this.ctx.stroke();
         this.ctx.fillStyle = '#FFFFFF'; // Set the text color to white
 
-        //this.ctx.fillStyle = '#000000';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         this.ctx.fillText(node, pos.x, pos.y);
     }
 
     handleMouseDown(event) {
-        const rect = this.canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        for (const [node, pos] of Object.entries(this.graph.positions)) {
-            const distance = Math.sqrt((pos.x - x) ** 2 + (pos.y - y) ** 2);
-            if (distance <= this.graph.radius) {
-                this.selectedNode = node;
-                this.offsetX = pos.x - x;
-                this.offsetY = pos.y - y;
-                break;
-            }
-        }
+        this.graph.handleMouseDown(event, this.canvas, this.ctx);
     }
 
     handleMouseMove(event) {
-        if (this.selectedNode) {
-            const rect = this.canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left + this.offsetX;
-            const y = event.clientY - rect.top + this.offsetY;
-
-            this.graph.positions[this.selectedNode] = { x, y };
-            this.graph.draw(this.ctx);
-            this.highlightGraph();
-        }
+        this.graph.handleMouseMove(event, this.canvas, this.ctx);
     }
 
     handleMouseUp() {
-        this.selectedNode = null;
+        this.graph.handleMouseUp();
     }
 
     handleTouchStart(event) {
-        event.preventDefault();
-        const touch = event.touches[0];
-        this.handleMouseDown({
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            target: this.canvas,
-        });
+        this.graph.handleTouchStart(event, this.canvas, this.ctx);
     }
 
     handleTouchMove(event) {
-        event.preventDefault();
-        const touch = event.touches[0];
-        this.handleMouseMove({
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            target: this.canvas,
-        });
+        this.graph.handleTouchMove(event, this.canvas, this.ctx);
     }
 
     handleTouchEnd() {
-        this.handleMouseUp();
+        this.graph.handleTouchEnd();
     }
 
     loadGraphFromText(text) {
@@ -224,8 +188,6 @@ class BellmanFordVisualizer {
         });
     }
 }
-
-
 
 window.onload = function() {
     const canvas = document.getElementById('bellmanFordCanvas');

@@ -153,7 +153,6 @@ pre {
     align-items: center; /* Center the buttons vertically (if needed) */
     flex-wrap: wrap; /* Wrap buttons if there's not enough space */
     gap: 10px; /* Add spacing between the buttons */
-    margin-bottom: 20px; /* Add some space below the button container */
 }
 
 #directionButtonContainer button {
@@ -188,27 +187,27 @@ pre {
 }
 
 /* Footer Styles */
+/* Footer Styles */
 #footer {
     background-color: rgba(43, 43, 43, 0.8); /* Dark background with transparency */
     color: #e0e0e0;
-    text-align: center;
     position: fixed;
     bottom: 0;
     width: 100%;
     box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+    justify-content: space-between; /* Adjust this for alignment */
+    padding: 1px;
+    box-sizing: border-box;
 }
-
 #footer button {
     background-color: #444;
     color: #e0e0e0;
     border: 1px solid #555;
-    padding: 8px 15px; /* Reduced padding for smaller buttons */
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    flex: 1; /* Ensure buttons take up equal space */
+    max-width: 150px; /* Optional: limit the maximum width of each button */
 }
 
 #footer button:hover {
@@ -218,6 +217,68 @@ pre {
 #footer button:active {
     background-color: #333;
 }
+
+#buttonContainer {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#hamburgerMenu {
+    display: none; /* Hidden by default */
+    position: relative;
+    
+}
+
+#hamburgerIcon {
+    font-size: 24px;
+    cursor: pointer;
+    background-color: #444;
+    padding: 8px;
+    border-radius: 5px;
+    display: none; /* Initially hidden */
+}
+
+#popupMenu {
+    display: none;
+    position: absolute;
+    bottom: 100%; /* Position above the icon */
+    right: 0;
+    background-color: #2b2b2b;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 10px;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+#popupMenu button {
+    margin: 5px 0;
+}
+
+#popupMenu.show {
+    display: flex;
+}
+
+@media (max-width: 600px) {
+    #buttonContainer {
+        flex-wrap: nowrap; /* Don't allow buttons to wrap */
+        overflow: hidden;
+    }
+
+    #hamburgerIcon {
+        display: block; /* Show the hamburger icon on small screens */
+    }
+
+    #buttonContainer button {
+        display: none; /* Hide buttons that overflow */
+    }
+
+    #hamburgerMenu {
+        display: block; /* Show the hamburger menu */
+    }
+}
+
 
 @media (max-width: 768px) {
     #indegreeList td {

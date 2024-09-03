@@ -232,4 +232,12 @@ class BaseGraph {
 
         this.draw(ctx);
     }
+
+    
 }
+
+
+document.getElementById('hamburgerIcon').addEventListener('click', function() {
+    const popupMenu = document.getElementById('popupMenu');
+    popupMenu.classList.toggle('show');
+});
