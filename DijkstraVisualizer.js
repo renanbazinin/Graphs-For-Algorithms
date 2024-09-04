@@ -1,27 +1,24 @@
-class BellmanFordVisualizer {
+class DijkstraVisualizer {
     constructor(graph, canvas, ctx) {
         this.graph = graph;
         this.canvas = canvas;
         this.ctx = ctx;
         this.distanceArray = new Map();
         this.predecessorArray = new Map();
-        this.steps = [];
-        this.currentStep = 0;
-        this.currentRelaxationIndex = 0; // Track the current relaxation
-        this.relaxedNodes = new Set(); // Track the nodes being relaxed
+        this.relaxedNodes = new Set();
+        this.visitedNodes = new Set(); // Track visited nodes
 
         this.logContainer = document.getElementById('logContainer'); // Reference to the log container
+        this.priorityQueue = new MinPriorityQueue(); // Initialize a priority queue for Dijkstra
     }
 
     initialize(startNode) {
         this.clearLog(); // Clear the log whenever we initialize or reset
-        console.log('Initializing Bellman-Ford with start node:', startNode);
+        console.log('Initializing Dijkstra with start node:', startNode);
         this.distanceArray.clear();
         this.predecessorArray.clear();
-        this.steps = [];
-        this.currentStep = 0;
-        this.currentRelaxationIndex = 0; // Reset the relaxation index
         this.relaxedNodes.clear();
+        this.visitedNodes.clear();
 
         this.graph.nodes.forEach(node => {
             this.distanceArray.set(node, Infinity);
@@ -29,7 +26,9 @@ class BellmanFordVisualizer {
         });
 
         this.distanceArray.set(startNode, 0);
-        this.recordStep(); // Record the initial state
+        this.priorityQueue.clear(); // Clear the queue for a fresh run
+        this.priorityQueue.enqueue(startNode, 0);
+
         this.updateUI();
         this.graph.draw(this.ctx); // Draw graph without highlights initially
     }
@@ -53,95 +52,57 @@ class BellmanFordVisualizer {
         this.logContainer.scrollTop = this.logContainer.scrollHeight;
     }
 
-    recordStep() {
-        this.steps.push({
-            distanceArray: new Map(this.distanceArray),
-            predecessorArray: new Map(this.predecessorArray),
-            currentStep: this.currentStep,
-            currentRelaxationIndex: this.currentRelaxationIndex,
-        });
-        console.log(`Step ${this.currentStep} recorded. Distance Array:`, this.distanceArray, 'Predecessor Array:', this.predecessorArray);
-    }
-
-    undoStep() {
-        if (this.steps.length > 1) {
-            this.steps.pop();
-            const lastStep = this.steps[this.steps.length - 1];
-            this.distanceArray = lastStep.distanceArray;
-            this.predecessorArray = lastStep.predecessorArray;
-            this.currentStep = lastStep.currentStep;
-            this.currentRelaxationIndex = lastStep.currentRelaxationIndex;
-            this.relaxedNodes.clear(); // Clear relaxed nodes when undoing
-            this.updateUI();
-            this.highlightGraph();
-        }
-    }
-
     async nextStep() {
-        const edges = [];
-    
-        // Collect all edges into a list so that we can relax them one by one
-        this.graph.edges.forEach((neighbors, u) => {
-            neighbors.forEach(({ node: v, weight }) => {
-                edges.push([u, v, weight]);
-            });
-        });
-    
-        // If we are not done with all steps (V-1 total iterations)
-        if (this.currentStep < this.graph.nodes.length - 1) {
-            // Clear previous non-improved nodes before the next step
-            this.nonImprovedNodes = new Set(); 
-    
-            // Process one edge relaxation at a time
-            if (this.currentRelaxationIndex < edges.length) {
-                const [u, v, weight] = edges[this.currentRelaxationIndex];
-                this.relaxedNodes.clear(); // Clear previous relaxed nodes
-                this.relax(u, v, weight);  // Relax a single edge
-                
-                this.currentRelaxationIndex++; // Move to the next edge relaxation
-            }
-    
-            // If we've processed all edges for this step, move to the next iteration
-            if (this.currentRelaxationIndex >= edges.length) {
-                this.currentRelaxationIndex = 0; // Reset edge index for the next iteration
-                this.currentStep++; // Move to the next step (next iteration)
-            }
-    
-            this.recordStep();
-            this.updateUI();
-            this.highlightGraph();
-        } else {
+        // If the priority queue is empty, we're done
+        if (this.priorityQueue.isEmpty()) {
             const logMessage = `Algorithm completed or no more steps available.`;
             console.log(logMessage);
             this.addLog(logMessage);
+            return;
         }
+
+        // Get the node with the minimum distance from the queue
+        const { element: u } = this.priorityQueue.dequeue();
+
+        // If the node has already been visited, skip it
+        if (this.visitedNodes.has(u)) {
+            return;
+        }
+
+        this.visitedNodes.add(u);
+        this.relaxedNodes.clear(); // Clear previous relaxed nodes
+
+        const neighbors = this.graph.edges.get(u);
+        neighbors.forEach(({ node: v, weight }) => {
+            this.relax(u, v, weight);
+        });
+
+        this.updateUI();
+        this.highlightGraph();
     }
-    
+
     relax(u, v, weight) {
         const currentDistanceV = this.distanceArray.get(v);
         const newDistance = this.distanceArray.get(u) + weight;
-    
+
         if (currentDistanceV > newDistance) {
             const logMessage = `Relaxing edge (${u}, ${v}) with weight ${weight}. Improvement found: distance to ${v} changed from ${currentDistanceV} to ${newDistance}.`;
             console.log(logMessage); // Still log to the console
             this.addLog(logMessage); // Also add to log container
-    
+
             this.distanceArray.set(v, newDistance);
             this.predecessorArray.set(v, u);
             this.relaxedNodes.add(u);
             this.relaxedNodes.add(v);
+
+            // Update the priority queue with the new distance for v
+            this.priorityQueue.enqueue(v, newDistance);
         } else {
             const logMessage = `Relaxing edge (${u}, ${v}) with weight ${weight}. No improvement: distance to ${v} remains ${currentDistanceV}.`;
             console.log(logMessage); // Still log to the console
             this.addLog(logMessage); // Also add to log container
-    
-            // Track both the source and destination nodes for no improvement
-            this.nonImprovedNodes = new Set([u, v]);
         }
     }
-    
-    
-    
 
     updateUI() {
         const distanceArrayElement = document.getElementById('distanceArray');
@@ -163,33 +124,30 @@ class BellmanFordVisualizer {
         const pos = this.graph.positions[node];
         this.ctx.beginPath();
         this.ctx.arc(pos.x, pos.y, this.graph.radius, 0, 2 * Math.PI);
-    
-        if (this.nonImprovedNodes && this.nonImprovedNodes.has(node)) {
-            this.ctx.fillStyle = '#FF6347'; // Reddish color for non-improved nodes
-        } else if (this.relaxedNodes.has(node)) {
+
+        if (this.relaxedNodes.has(node)) {
             this.ctx.fillStyle = '#FFD700'; // Gold color for relaxed nodes
+        } else if (this.visitedNodes.has(node)) {
+            this.ctx.fillStyle = '#ADD8E6'; // Light blue color for visited nodes
         } else {
             this.ctx.fillStyle = '#1e1e1e'; // Default color for non-relaxed nodes
         }
-    
+
         this.ctx.fill();
         this.ctx.strokeStyle = '#ADD8E6';
         this.ctx.stroke();
-    
+
         // Dynamically adjust font size based on the node text length
         const baseFontSize = 16; // Base font size
         const maxFontSize = this.graph.radius * 1.5; // Limit max font size
         const fontSize = Math.min(baseFontSize + (10 - node.length) * 1.5, maxFontSize); // Adjust font size based on length
-    
+
         this.ctx.fillStyle = '#FFFFFF'; // Set the text color to white
         this.ctx.font = `${fontSize}px Arial`; // Dynamically set font size
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         this.ctx.fillText(node, pos.x, pos.y); // Draw the node text
     }
-    
-    
-    
 
     handleMouseDown(event) {
         this.graph.handleMouseDown(event, this.canvas, this.ctx);
@@ -244,7 +202,6 @@ class BellmanFordVisualizer {
 
     updateNodeSelector() {
         const nodeSelector = document.getElementById('nodeSelector');
-        
         nodeSelector.innerHTML = '';
         this.graph.nodes.forEach(node => {
             const option = document.createElement('option');
@@ -252,38 +209,52 @@ class BellmanFordVisualizer {
             option.text = node;
             nodeSelector.appendChild(option);
         });
-        
+    }
+}
+
+class MinPriorityQueue {
+    constructor() {
+        this.queue = [];
+    }
+
+    enqueue(element, priority) {
+        this.queue.push({ element, priority });
+        this.queue.sort((a, b) => a.priority - b.priority); // Sort by priority (distance)
+    }
+
+    dequeue() {
+        return this.queue.shift(); // Get the element with the minimum priority
+    }
+
+    clear() {
+        this.queue = [];
+    }
+
+    isEmpty() {
+        return this.queue.length === 0;
     }
 }
 
 
 window.onload = function() {
-    const canvas = document.getElementById('bellmanFordCanvas');
+    const canvas = document.getElementById('dijkstraCanvas');
     const ctx = canvas.getContext('2d');
     const graph = new WeightedDirectedGraph();
-    const visualizer = new BellmanFordVisualizer(graph, canvas, ctx);
+    const visualizer = new DijkstraVisualizer(graph, canvas, ctx);
 
+    // Event listeners for UI controls
     document.getElementById('startButton').addEventListener('click', () => {
         const startNode = document.getElementById('nodeSelector').value;
         visualizer.initialize(startNode);
     });
 
-    document.getElementById('nodeSelector').addEventListener('change', () => {
-        const startNode = document.getElementById('nodeSelector').value;
-        visualizer.initialize(startNode);
-    });
-
-    
     document.getElementById('nextButton').addEventListener('click', () => {
         visualizer.nextStep();
     });
 
     document.getElementById('resetButton').addEventListener('click', () => {
-        visualizer.initialize(document.getElementById('nodeSelector').value);
-    });
-
-    document.getElementById('undoButton').addEventListener('click', () => {
-        visualizer.undoStep();
+        const startNode = document.getElementById('nodeSelector').value;
+        visualizer.initialize(startNode);
     });
 
     document.getElementById('importGraphButton').addEventListener('click', () => {
@@ -301,22 +272,6 @@ window.onload = function() {
     document.getElementById('closeModalButton').addEventListener('click', () => {
         document.getElementById('importGraphModal').style.display = 'none';
     });
-
-    document.getElementById('loadClassicExampleButton').addEventListener('click', () => {
-        loadClassicExample();
-    });
-
-    function loadClassicExample() {
-        const example = `
-            a -> b:2, c:4
-            b -> c:1, d:7
-            c -> d:3
-            d -> e:1
-            e -> a:6
-        `;
-        visualizer.loadGraphFromText(example.trim());
-        visualizer.initialize('a');
-    }
 
     canvas.addEventListener('mousedown', (event) => visualizer.handleMouseDown(event));
     canvas.addEventListener('mousemove', (event) => visualizer.handleMouseMove(event));

@@ -3,63 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DFS Visualizer</title>
+    <title>Dijkstra Visualizer</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="stylesNew.css">
+
 </head>
 <body>
-    <h1>DFS Visualizer</h1>
 
-    <div id="buttonContainer">
-        <div id="resizeControls">
-            <button id="moreSpaceButton">More Space</button>
-            <button id="lessSpaceButton">Less Space</button>
-        </div>
-        <button id="importGraphButton">Import Or Edit Graph</button>
-        <span>or</span>
-        <button id="loadClassicExampleButton">Import Instant Classic Example</button>
-    </div>
+    <h1>Dijkstra Visualizer</h1>
 
     <div id="canvasContainer">
-        <canvas id="dfsCanvas" width="800" height="600"></canvas>
+        <canvas id="dijkstraCanvas" width="800" height="600"></canvas>
     </div>
 
     <div id="controlsContainer">
         <div id="stepControls">
-            <button id="resetButton">Reset Visualization</button>
-            <button id="startButton">Start DFS Visualization</button>
-            <label for="delaySlider">Set Delay (ms):</label>
-            <input type="range" id="delaySlider" min="100" max="2000" value="500">
-            <span id="delayLabel">500ms</span>
+            <select id="nodeSelector"></select>
+            <button id="startButton">Start</button>
+            <button id="nextButton">Next Step</button>
+            <button id="resetButton">Reset</button>
+            <button id="importGraphButton">Import Graph</button>
         </div>
     </div>
 
     <div id="visualizerInfo">
-        <h2>Current State:</h2>
-        <div id="visitedNodesList">Visited Nodes: </div>
-        <div id="finishedNodesList">Finishing Nodes: </div>
-
-        <div id="bracketLinearContainer">
-            <h2>DFS Bracket Visualization:</h2>
-            <table id="bracketLinearTable">
-                <tbody>
-                    <tr id="bracketLinearRowBrackets"></tr>
-                    <tr id="bracketLinearRowNodes"></tr>
-                </tbody>
-            </table>
-        </div>
+        <div id="logContainer"></div>
+        <div id="distanceArray">Distance Array:</div>
+        <div id="predecessorArray">Predecessor Array:</div>
     </div>
-    
-    <!-- Import Graph Modal -->
+
+    <!-- Modal for importing graph -->
     <div id="importGraphModal" class="modal">
         <div class="modal-content">
-            <span id="closeModalButton" class="close">&times;</span>
-            <h2>Import or Edit Graph</h2>
-            <textarea id="graphInput" placeholder="Enter adjacency list..."></textarea>
+            <h2>Import Graph</h2>
+            <textarea id="graphInput" placeholder="Enter graph in adjacency list format..."></textarea>
             <button id="loadGraphButton">Load Graph</button>
+            <button id="closeModalButton">Close</button>
         </div>
     </div>
-
     <footer id="footer">
 
         <div id="buttonContainer">
@@ -88,9 +69,11 @@
         </div>
 
     </footer>
+    <script src="DijkstraVisualizer.js"></script>
 
     <script src="baseGraph.js"></script>
     <script src="directedGraph.js"></script>
-    <script src="dfsVisualizer.js"></script>
+    <script src="weightedDirectedGraph.js"></script>
+
 </body>
 </html>
