@@ -6,11 +6,19 @@
     <title>Dijkstra Visualizer</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="stylesNew.css">
-
 </head>
 <body>
-
     <h1>Dijkstra Visualizer</h1>
+
+    <div id="buttonContainer">
+        <div id="resizeControls">
+            <button id="moreSpaceButton">More Space</button>
+            <button id="lessSpaceButton">Less Space</button>
+        </div>
+        <button id="importGraphButton">Import Or Edit Graph</button>
+        <span>or</span>
+        <button id="loadClassicExampleButton">Import Instant Classic Example</button>
+    </div>
 
     <div id="canvasContainer">
         <canvas id="dijkstraCanvas" width="800" height="600"></canvas>
@@ -18,31 +26,42 @@
 
     <div id="controlsContainer">
         <div id="stepControls">
-            <select id="nodeSelector"></select>
-            <button id="startButton">Start</button>
-            <button id="nextButton">Next Step</button>
-            <button id="resetButton">Reset</button>
-            <button id="importGraphButton">Import Graph</button>
+            <button id="resetButton">Reset Visualization</button>
+            <label for="nodeSelector">Choose Starting Node:</label>
+            <select id="nodeSelector">
+                <option value="a">a</option>
+                <option value="b">b</option>
+                <option value="c">c</option>
+                <option value="d">d</option>
+                <option value="e">e</option>
+                <option value="f">f</option>
+            </select>
+            <button id="startButton">Start Dijkstra Visualization</button>
+            <label for="delaySlider">Set Delay (ms):</label>
+            <input type="range" id="delaySlider" min="100" max="2000" value="500">
+            <span id="delayLabel">500ms</span>
         </div>
     </div>
 
     <div id="visualizerInfo">
-        <div id="logContainer"></div>
-        <div id="distanceArray">Distance Array:</div>
-        <div id="predecessorArray">Predecessor Array:</div>
+        <h2>Current State:</h2>
+        <div id="distanceArray">Distance Array: </div>
+        <div id="predecessorArray">Predecessor Array: </div>
+        <div id="queue">Current Queue: </div>
+        <div id="logContainer" style="margin-top: 10px; max-height: 200px; overflow-y: auto; background-color: #1e1e1e; padding: 10px; border: 1px solid #444;">
+            <h3>Log Info:</h3>
+        </div>
     </div>
 
-    <!-- Modal for importing graph -->
     <div id="importGraphModal" class="modal">
         <div class="modal-content">
-            <h2>Import Graph</h2>
-            <textarea id="graphInput" placeholder="Enter graph in adjacency list format..."></textarea>
+            <span id="closeModalButton" class="close">&times;</span>
+            <h2>Import or Edit Graph</h2>
+            <textarea id="graphInput" placeholder="Enter adjacency list..."></textarea>
             <button id="loadGraphButton">Load Graph</button>
-            <button id="closeModalButton">Close</button>
         </div>
     </div>
     <footer id="footer">
-
         <div id="buttonContainer">
             <button onclick="window.location.href='index.html'">Home</button>
             <button onclick="window.location.href='things.html'">Topological Sort</button>
@@ -50,8 +69,7 @@
             <button onclick="window.location.href='bfs.html'">BFS</button>
             <button onclick="window.location.href='SCCVisualizer.html'">SCC</button>
             <button onclick="window.location.href='BellmanFordVisualizer.html'">Bellman</button>
-            <button onclick="window.location.href='dijkstra_visualizer.html'">dijkstra</button>
-
+            <button onclick="window.location.href='dijkstra_visualizer.html'">Dijkstra</button>
         </div>
         <div id="hamburgerMenu">
             <div id="hamburgerIcon">&#9776;</div> <!-- Hamburger icon -->
@@ -62,17 +80,14 @@
                 <button onclick="window.location.href='bfs.html'">BFS</button>
                 <button onclick="window.location.href='SCCVisualizer.html'">SCC</button>
                 <button onclick="window.location.href='BellmanFordVisualizer.html'">Bellman</button>
-                <button onclick="window.location.href='dijkstra_visualizer.html'">dijkstra</button>
-
-                <!-- Add more buttons as needed -->
+                <button onclick="window.location.href='dijkstra_visualizer.html'">Dijkstra</button>
             </div>
         </div>
-
     </footer>
-    <script src="DijkstraVisualizer.js"></script>
 
     <script src="baseGraph.js"></script>
     <script src="directedGraph.js"></script>
+    <script src="DijkstraVisualizer.js"></script>
     <script src="weightedDirectedGraph.js"></script>
 
 </body>

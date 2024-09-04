@@ -1,122 +1,103 @@
 class DijkstraVisualizer {
-    constructor(graph, canvas, ctx) {
+    constructor(graph, canvas, ctx, delay = 500) {
         this.graph = graph;
         this.canvas = canvas;
         this.ctx = ctx;
         this.distanceArray = new Map();
         this.predecessorArray = new Map();
         this.relaxedNodes = new Set();
-        this.visitedNodes = new Set(); // Track visited nodes
+        this.visitedNodes = new Set();
+        this.queue = [];
+        this.delay = delay; // Delay in milliseconds
 
-        this.logContainer = document.getElementById('logContainer'); // Reference to the log container
-        this.priorityQueue = new MinPriorityQueue(); // Initialize a priority queue for Dijkstra
+        this.logContainer = document.getElementById('logContainer'); // Log container reference
+        this.priorityQueue = new MinPriorityQueue(); // Initialize the priority queue for Dijkstra
     }
 
-    initialize(startNode) {
-        this.clearLog(); // Clear the log whenever we initialize or reset
-        console.log('Initializing Dijkstra with start node:', startNode);
+    async startDijkstra(startNode) {
+        this.clearLog();
         this.distanceArray.clear();
         this.predecessorArray.clear();
         this.relaxedNodes.clear();
         this.visitedNodes.clear();
+        this.priorityQueue.clear(); // Clear the priority queue for a fresh start
 
+        // Build the priority queue by initializing distances
         this.graph.nodes.forEach(node => {
-            this.distanceArray.set(node, Infinity);
+            const initialDistance = (node === startNode) ? 0 : Infinity;
+            this.distanceArray.set(node, initialDistance);
             this.predecessorArray.set(node, null);
-        });
-
-        this.distanceArray.set(startNode, 0);
-        this.priorityQueue.clear(); // Clear the queue for a fresh run
-        this.priorityQueue.enqueue(startNode, 0);
-
-        this.updateUI();
-        this.graph.draw(this.ctx); // Draw graph without highlights initially
-    }
-
-    clearLog() {
-        // Clear the contents of the log container
-        this.logContainer.innerHTML = '';
-    }
-
-    addLog(message) {
-        // Create a new log entry and append it to the log container
-        const logEntry = document.createElement('div');
-        logEntry.textContent = message;
-        logEntry.style.color = '#e0e0e0'; // Text color
-        logEntry.style.marginBottom = '5px'; // Add some spacing between log messages
-
-        // Append the log entry to the log container
-        this.logContainer.appendChild(logEntry);
-
-        // Ensure the log container scrolls to the bottom as new messages are added
-        this.logContainer.scrollTop = this.logContainer.scrollHeight;
-    }
-
-    async nextStep() {
-        // If the priority queue is empty, we're done
-        if (this.priorityQueue.isEmpty()) {
-            const logMessage = `Algorithm completed or no more steps available.`;
-            console.log(logMessage);
-            this.addLog(logMessage);
-            return;
-        }
-
-        // Get the node with the minimum distance from the queue
-        const { element: u } = this.priorityQueue.dequeue();
-
-        // If the node has already been visited, skip it
-        if (this.visitedNodes.has(u)) {
-            return;
-        }
-
-        this.visitedNodes.add(u);
-        this.relaxedNodes.clear(); // Clear previous relaxed nodes
-
-        const neighbors = this.graph.edges.get(u);
-        neighbors.forEach(({ node: v, weight }) => {
-            this.relax(u, v, weight);
+            this.priorityQueue.enqueue(node, initialDistance); // Build the priority queue
         });
 
         this.updateUI();
-        this.highlightGraph();
+        this.graph.draw(this.ctx);
+
+        // Dijkstra's algorithm main loop with delays
+        while (!this.priorityQueue.isEmpty()) {
+            const { element: u } = this.priorityQueue.dequeue(); // Extract the node with the smallest distance
+            if (this.visitedNodes.has(u)) continue; // Skip already visited nodes
+
+            this.visitedNodes.add(u); // Mark this node as visited
+            this.relaxedNodes.clear(); // Clear previously relaxed nodes for visualization
+
+            const neighbors = this.graph.edges.get(u) || [];
+            for (const { node: v, weight } of neighbors) {
+                await this.relax(u, v, weight); // Relax the edge and update UI with delay
+            }
+
+            this.updateUI();
+            this.updateQueueUI();
+            this.highlightGraph(); // Redraw and highlight nodes and edges
+
+            await this.sleep(this.delay); // Add delay for better visualization
+        }
+
+        this.addLog("Algorithm completed.");
     }
 
-    relax(u, v, weight) {
+    async relax(u, v, weight) {
         const currentDistanceV = this.distanceArray.get(v);
         const newDistance = this.distanceArray.get(u) + weight;
 
         if (currentDistanceV > newDistance) {
-            const logMessage = `Relaxing edge (${u}, ${v}) with weight ${weight}. Improvement found: distance to ${v} changed from ${currentDistanceV} to ${newDistance}.`;
-            console.log(logMessage); // Still log to the console
-            this.addLog(logMessage); // Also add to log container
-
+            this.addLog(`Relaxing edge (${u}, ${v}) with weight ${weight}. Distance to ${v} changed from ${currentDistanceV} to ${newDistance}.`);
             this.distanceArray.set(v, newDistance);
             this.predecessorArray.set(v, u);
-            this.relaxedNodes.add(u);
+            this.priorityQueue.enqueue(v, newDistance); // Re-enqueue to mimic Decrease-Key
             this.relaxedNodes.add(v);
-
-            // Update the priority queue with the new distance for v
-            this.priorityQueue.enqueue(v, newDistance);
+            await this.sleep(this.delay); // Delay for visualizing the change
         } else {
-            const logMessage = `Relaxing edge (${u}, ${v}) with weight ${weight}. No improvement: distance to ${v} remains ${currentDistanceV}.`;
-            console.log(logMessage); // Still log to the console
-            this.addLog(logMessage); // Also add to log container
+            this.addLog(`Relaxing edge (${u}, ${v}) with weight ${weight}. No improvement: distance to ${v} remains ${currentDistanceV}.`);
         }
     }
 
-    updateUI() {
-        const distanceArrayElement = document.getElementById('distanceArray');
-        const predecessorArrayElement = document.getElementById('predecessorArray');
+    clearLog() {
+        this.logContainer.innerHTML = ''; // Clear the log container
+    }
 
-        distanceArrayElement.innerText = `Distance Array: ${Array.from(this.distanceArray).map(([node, dist]) => `${node}: ${dist}`).join(', ')}`;
-        predecessorArrayElement.innerText = `Predecessor Array: ${Array.from(this.predecessorArray).map(([node, pred]) => `${node}: ${pred || '-'}`).join(', ')}`;
+    addLog(message) {
+        const logEntry = document.createElement('div');
+        logEntry.textContent = message;
+        logEntry.style.color = '#e0e0e0';
+        logEntry.style.marginBottom = '5px';
+        this.logContainer.appendChild(logEntry);
+        this.logContainer.scrollTop = this.logContainer.scrollHeight; // Auto-scroll to the latest log
     }
 
     highlightGraph() {
         this.graph.draw(this.ctx);
 
+        // Highlight each node
         this.graph.nodes.forEach(node => {
             this.highlightNode(node);
+        });
+
+        // Highlight each edge
+        this.graph.edges.forEach((neighbors, node) => {
+            neighbors.forEach(({ node: neighbor }) => {
+                this.highlightEdge(node, neighbor);
+            });
         });
     }
 
@@ -125,54 +106,55 @@ class DijkstraVisualizer {
         this.ctx.beginPath();
         this.ctx.arc(pos.x, pos.y, this.graph.radius, 0, 2 * Math.PI);
 
-        if (this.relaxedNodes.has(node)) {
-            this.ctx.fillStyle = '#FFD700'; // Gold color for relaxed nodes
-        } else if (this.visitedNodes.has(node)) {
-            this.ctx.fillStyle = '#ADD8E6'; // Light blue color for visited nodes
+        // Set the fill color based on whether the node has been visited
+        if (this.visitedNodes.has(node)) {
+            this.ctx.fillStyle = '#ADD8E6'; // Light blue for visited nodes
+        } else if (this.relaxedNodes.has(node)) {
+            this.ctx.fillStyle = '#FFD700'; // Gold for relaxed nodes
         } else {
-            this.ctx.fillStyle = '#1e1e1e'; // Default color for non-relaxed nodes
+            this.ctx.fillStyle = '#1e1e1e'; // Default color for unvisited nodes
         }
 
         this.ctx.fill();
         this.ctx.strokeStyle = '#ADD8E6';
         this.ctx.stroke();
 
-        // Dynamically adjust font size based on the node text length
-        const baseFontSize = 16; // Base font size
-        const maxFontSize = this.graph.radius * 1.5; // Limit max font size
-        const fontSize = Math.min(baseFontSize + (10 - node.length) * 1.5, maxFontSize); // Adjust font size based on length
-
-        this.ctx.fillStyle = '#FFFFFF'; // Set the text color to white
-        this.ctx.font = `${fontSize}px Arial`; // Dynamically set font size
+        this.ctx.fillStyle = '#FFFFFF';
+        this.ctx.font = `${this.graph.radius / 2}px Arial`;
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(node, pos.x, pos.y); // Draw the node text
+        this.ctx.fillText(node, pos.x, pos.y);
     }
 
-    handleMouseDown(event) {
-        this.graph.handleMouseDown(event, this.canvas, this.ctx);
+    highlightEdge(fromNode, toNode) {
+        const fromPos = this.graph.positions[fromNode];
+        const toPos = this.graph.positions[toNode];
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(fromPos.x, fromPos.y);
+        this.ctx.lineTo(toPos.x, toPos.y);
+        this.ctx.strokeStyle = '#ADD8E6'; // Light blue for edges
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
     }
 
-    handleMouseMove(event) {
-        this.graph.handleMouseMove(event, this.canvas, this.ctx);
+    updateUI() {
+        const distanceArrayElement = document.getElementById('distanceArray');
+        const predecessorArrayElement = document.getElementById('predecessorArray');
+        distanceArrayElement.innerText = `Distance Array: ${Array.from(this.distanceArray).map(([node, dist]) => `${node}: ${dist}`).join(', ')}`;
+        predecessorArrayElement.innerText = `Predecessor Array: ${Array.from(this.predecessorArray).map(([node, pred]) => `${node}: ${pred || '-'}`).join(', ')}`;
     }
 
-    handleMouseUp() {
-        this.graph.handleMouseUp();
+    updateQueueUI() {
+        const queueElement = document.getElementById('queue');
+        queueElement.innerText = `Current Queue: ${this.priorityQueue.queue.map(q => `${q.element}(${q.priority})`).join(' -> ')}`;
     }
 
-    handleTouchStart(event) {
-        this.graph.handleTouchStart(event, this.canvas, this.ctx);
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    handleTouchMove(event) {
-        this.graph.handleTouchMove(event, this.canvas, this.ctx);
-    }
-
-    handleTouchEnd() {
-        this.graph.handleTouchEnd();
-    }
-
+    // Loading the graph from the text format and updating node selector
     loadGraphFromText(text) {
         this.graph.nodes = [];
         this.graph.edges.clear();
@@ -197,18 +179,42 @@ class DijkstraVisualizer {
         });
 
         this.graph.draw(this.ctx);
-        this.updateNodeSelector();
+        this.updateNodeSelector(); // Update node selector after loading graph
     }
 
     updateNodeSelector() {
         const nodeSelector = document.getElementById('nodeSelector');
-        nodeSelector.innerHTML = '';
+        nodeSelector.innerHTML = ''; // Clear existing options
+
         this.graph.nodes.forEach(node => {
             const option = document.createElement('option');
             option.value = node;
             option.text = node;
             nodeSelector.appendChild(option);
         });
+    }
+
+    // Load a predefined classic example
+    loadClassicExample() {
+        this.graph.nodes = [];
+        this.graph.edges.clear();
+
+        this.graph.addNode('a', 150, 100);
+        this.graph.addNode('b', 300, 100);
+        this.graph.addNode('c', 150, 250);
+        this.graph.addNode('d', 300, 250);
+        this.graph.addNode('e', 450, 100);
+        this.graph.addNode('f', 450, 250);
+
+        this.graph.addEdge('a', 'b', 1);
+        this.graph.addEdge('a', 'c', 2);
+        this.graph.addEdge('b', 'd', 2);
+        this.graph.addEdge('c', 'd', 3);
+        this.graph.addEdge('e', 'd', 4);
+        this.graph.addEdge('e', 'f', 5);
+
+        this.graph.draw(this.ctx);
+        this.updateNodeSelector(); // Update node selector for the classic example
     }
 }
 
@@ -235,59 +241,77 @@ class MinPriorityQueue {
     }
 }
 
-
 window.onload = function() {
     const canvas = document.getElementById('dijkstraCanvas');
     const ctx = canvas.getContext('2d');
-    const graph = new WeightedDirectedGraph();
-    const visualizer = new DijkstraVisualizer(graph, canvas, ctx);
+    const graph = new WeightedDirectedGraph(); // Assuming this class exists
+    const visualizer = new DijkstraVisualizer(graph, canvas, ctx, 500); // Create visualizer with a default delay
 
-    // Event listeners for UI controls
-    document.getElementById('startButton').addEventListener('click', () => {
-        const startNode = document.getElementById('nodeSelector').value;
-        visualizer.initialize(startNode);
-    });
+    // Check if startButton exists before adding the event listener
+    const startButton = document.getElementById('startButton');
+    if (startButton) {
+        startButton.addEventListener('click', () => {
+            const startNode = document.getElementById('nodeSelector').value;
+            visualizer.startDijkstra(startNode);
+        });
+    }
 
-    document.getElementById('nextButton').addEventListener('click', () => {
-        visualizer.nextStep();
-    });
+    // Handle the delay slider for changing delay times
+    const delaySlider = document.getElementById('delaySlider');
+    const delayLabel = document.getElementById('delayLabel');
+    if (delaySlider) {
+        delaySlider.addEventListener('input', function() {
+            visualizer.delay = this.value;
+            delayLabel.innerText = this.value + "ms";
+        });
+    }
 
-    document.getElementById('resetButton').addEventListener('click', () => {
-        const startNode = document.getElementById('nodeSelector').value;
-        visualizer.initialize(startNode);
-    });
+    // Show the modal when Import/Edit button is clicked
+    const importGraphButton = document.getElementById('importGraphButton');
+    if (importGraphButton) {
+        importGraphButton.addEventListener('click', () => {
+            const currentAdjacencyList = graph.getAdjacencyList();
+            document.getElementById('graphInput').value = currentAdjacencyList;
+            document.getElementById('importGraphModal').style.display = 'flex';
+        });
+    }
 
-    document.getElementById('importGraphButton').addEventListener('click', () => {
-        const currentAdjacencyList = graph.getAdjacencyList();
-        document.getElementById('graphInput').value = currentAdjacencyList;
-        document.getElementById('importGraphModal').style.display = 'flex';
-    });
+    // Load graph from textarea input when Load Graph button is clicked
+    const loadGraphButton = document.getElementById('loadGraphButton');
+    if (loadGraphButton) {
+        loadGraphButton.addEventListener('click', () => {
+            const text = document.getElementById('graphInput').value;
+            visualizer.loadGraphFromText(text);
+            document.getElementById('importGraphModal').style.display = 'none';
+        });
+    }
 
-    document.getElementById('loadGraphButton').addEventListener('click', () => {
-        const text = document.getElementById('graphInput').value;
-        visualizer.loadGraphFromText(text);
-        document.getElementById('importGraphModal').style.display = 'none';
-    });
+    // Close the modal when the 'X' button is clicked
+    const closeModalButton = document.getElementById('closeModalButton');
+    if (closeModalButton) {
+        closeModalButton.addEventListener('click', () => {
+            document.getElementById('importGraphModal').style.display = 'none';
+        });
+    }
 
-    document.getElementById('closeModalButton').addEventListener('click', () => {
-        document.getElementById('importGraphModal').style.display = 'none';
-    });
+    // Load a classic example when the button is clicked
+    const loadClassicExampleButton = document.getElementById('loadClassicExampleButton');
+    if (loadClassicExampleButton) {
+        loadClassicExampleButton.addEventListener('click', () => {
+            visualizer.loadClassicExample();
+        });
+    }
 
-    canvas.addEventListener('mousedown', (event) => visualizer.handleMouseDown(event));
-    canvas.addEventListener('mousemove', (event) => visualizer.handleMouseMove(event));
-    canvas.addEventListener('mouseup', () => visualizer.handleMouseUp());
+    // Use the baseGraph's touch and mouse handlers for dragging nodes
+    canvas.addEventListener('mousedown', (event) => graph.handleMouseDown(event, canvas, ctx));
+    canvas.addEventListener('mousemove', (event) => graph.handleMouseMove(event, canvas, ctx));
+    canvas.addEventListener('mouseup', () => graph.handleMouseUp());
 
-    // Bind touch events
-    canvas.addEventListener('touchstart', (event) => visualizer.handleTouchStart(event), { passive: false });
-    canvas.addEventListener('touchmove', (event) => visualizer.handleTouchMove(event), { passive: false });
-    canvas.addEventListener('touchend', () => visualizer.handleTouchEnd(), { passive: false });
+    // Bind touch events for touch interaction
+    canvas.addEventListener('touchstart', (event) => graph.handleTouchStart(event, canvas, ctx), { passive: false });
+    canvas.addEventListener('touchmove', (event) => graph.handleTouchMove(event, canvas, ctx), { passive: false });
+    canvas.addEventListener('touchend', () => graph.handleTouchEnd(), { passive: false });
 
-    visualizer.loadGraphFromText(`
-        a -> b:2, c:4
-        b -> c:1, d:7
-        c -> d:3
-        d -> e:1
-        e -> a:6
-    `);
-    visualizer.initialize('a');
+    // Load a classic graph example on page load
+    visualizer.loadClassicExample();
 };
