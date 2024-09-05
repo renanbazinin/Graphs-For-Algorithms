@@ -21,7 +21,7 @@ class DijkstraVisualizer {
         this.relaxedNodes.clear();
         this.visitedNodes.clear();
         this.priorityQueue.clear(); // Clear the priority queue for a fresh start
-
+    
         // Build the priority queue by initializing distances
         this.graph.nodes.forEach(node => {
             const initialDistance = (node === startNode) ? 0 : Infinity;
@@ -29,33 +29,35 @@ class DijkstraVisualizer {
             this.predecessorArray.set(node, null);
             this.priorityQueue.enqueue(node, initialDistance); // Build the priority queue
         });
-
+    
+        // **Update queue UI only here to show the initial priority queue**
+        this.updateQueueUI(); // Show the initial priority queue only
+    
         this.updateUI();
         this.graph.draw(this.ctx);
-
-        // Dijkstra's algorithm main loop with delays
+    
+        // Main loop of Dijkstra's algorithm (you can remove further queue updates here)
         while (!this.priorityQueue.isEmpty()) {
-            const { element: u } = this.priorityQueue.dequeue(); // Extract the node with the smallest distance
-            if (this.visitedNodes.has(u)) continue; // Skip already visited nodes
-
-            this.visitedNodes.add(u); // Mark this node as visited
-            this.relaxedNodes.clear(); // Clear previously relaxed nodes for visualization
-
+            const { element: u } = this.priorityQueue.dequeue();
+            if (this.visitedNodes.has(u)) continue;
+    
+            this.visitedNodes.add(u);
+            this.relaxedNodes.clear();
+    
             const neighbors = this.graph.edges.get(u) || [];
             for (const { node: v, weight } of neighbors) {
-                await this.relax(u, v, weight); // Relax the edge and update UI with delay
+                await this.relax(u, v, weight);
             }
-
+    
             this.updateUI();
-            this.updateQueueUI();
-            this.highlightGraph(); // Redraw and highlight nodes and edges
-
+            this.highlightGraph();
+    
             await this.sleep(this.delay); // Add delay for better visualization
         }
-
+    
         this.addLog("Algorithm completed.");
     }
-
+    
     async relax(u, v, weight) {
         const currentDistanceV = this.distanceArray.get(v);
         const newDistance = this.distanceArray.get(u) + weight;
@@ -147,8 +149,10 @@ class DijkstraVisualizer {
 
     updateQueueUI() {
         const queueElement = document.getElementById('queue');
-        queueElement.innerText = `Current Queue: ${this.priorityQueue.queue.map(q => `${q.element}(${q.priority})`).join(' -> ')}`;
+        // Display the queue showing only the initial priority state
+        queueElement.innerText = `Initial Priority Queue: ${this.priorityQueue.queue.map(q => `${q.element}(${q.priority})`).join(' -> ')}`;
     }
+    
 
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
