@@ -80,40 +80,32 @@ class BellmanFordVisualizer {
     async nextStep() {
         const edges = [];
     
-        // Collect all edges into a list so that we can relax them one by one
         this.graph.edges.forEach((neighbors, u) => {
             neighbors.forEach(({ node: v, weight }) => {
                 edges.push([u, v, weight]);
             });
         });
-    
-        // If we are not done with all steps (V-1 total iterations)
+
         if (this.currentStep < this.graph.nodes.length - 1) {
-            // Clear previous non-improved nodes before the next step
             this.nonImprovedNodes = new Set(); 
     
-            // Process one edge relaxation at a time
             if (this.currentRelaxationIndex < edges.length) {
                 const [u, v, weight] = edges[this.currentRelaxationIndex];
-                this.relaxedNodes.clear(); // Clear previous relaxed nodes
-                this.relax(u, v, weight);  // Relax a single edge
-                
-                this.currentRelaxationIndex++; // Move to the next edge relaxation
+                this.relaxedNodes.clear();
+                this.relax(u, v, weight);  
+                this.currentRelaxationIndex++;
             }
-    
-            // If we've processed all edges for this step, move to the next iteration
+
             if (this.currentRelaxationIndex >= edges.length) {
-                this.currentRelaxationIndex = 0; // Reset edge index for the next iteration
-                this.currentStep++; // Move to the next step (next iteration)
+                this.currentRelaxationIndex = 0;
+                this.currentStep++;
             }
     
             this.recordStep();
             this.updateUI();
             this.highlightGraph();
         } else {
-            const logMessage = `Algorithm completed or no more steps available.`;
-            console.log(logMessage);
-            this.addLog(logMessage);
+            this.checkForNegativeCycle(edges); // Check for negative-weight cycles
         }
     }
     
@@ -254,6 +246,25 @@ class BellmanFordVisualizer {
         });
         
     }
+
+    checkForNegativeCycle(edges) {
+        let negativeCycleDetected = false;
+
+        for (const [u, v, weight] of edges) {
+            const currentDistanceV = this.distanceArray.get(v);
+            const newDistance = this.distanceArray.get(u) + weight;
+
+            if (currentDistanceV > newDistance) {
+                this.addLog(`NEGATIVE CYCLE detected via edge (${u}, ${v}) with weight ${weight}.`);
+                negativeCycleDetected = true;
+                break;
+            }
+        }
+
+        if (!negativeCycleDetected) {
+            this.addLog("No negative cycles detected. Algorithm completed.");
+        }
+    }
 }
 
 
@@ -296,6 +307,8 @@ window.onload = function() {
         const text = document.getElementById('graphInput').value;
         visualizer.loadGraphFromText(text);
         document.getElementById('importGraphModal').style.display = 'none';
+        const startNode = document.getElementById('nodeSelector').value;
+        visualizer.initialize(startNode);
     });
 
     document.getElementById('closeModalButton').addEventListener('click', () => {
