@@ -12,6 +12,8 @@ class WeightedDirectedGraph extends DirectedGraph {
         const arrowLength = 20;
         const curveOffset = 10; // Offset for drawing curved edges
 
+        const weightFontSize = 16; 
+
         this.nodes.forEach((node, index) => {
             if (!this.positions[node]) {
                 const angle = (index / this.nodes.length) * 2 * Math.PI;
@@ -78,6 +80,8 @@ class WeightedDirectedGraph extends DirectedGraph {
 
                         // Draw weight at the control point
                         ctx.fillStyle = '#FFFFFF';
+                        ctx.font = "35px Arial"; // Set the larger font size for weight text
+
                         ctx.fillText(weight, controlPoint.x, controlPoint.y);
                     } else {
                         // Draw straight line for regular edges
@@ -91,6 +95,8 @@ class WeightedDirectedGraph extends DirectedGraph {
                         const midX = (startPos.x + endPos.x) / 2;
                         const midY = (startPos.y + endPos.y) / 2;
                         ctx.fillStyle = '#FFFFFF';
+                        ctx.font = "35px Arial"; // Set the larger font size for weight text
+
                         ctx.fillText(weight, midX, midY);
                     }
 

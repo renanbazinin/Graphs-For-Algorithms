@@ -204,11 +204,11 @@ class DijkstraVisualizer {
         this.graph.edges.clear();
 
         this.graph.addNode('a', 150, 100);
-        this.graph.addNode('b', 300, 100);
-        this.graph.addNode('c', 150, 250);
-        this.graph.addNode('d', 300, 250);
-        this.graph.addNode('e', 450, 100);
-        this.graph.addNode('f', 450, 250);
+        this.graph.addNode('b', 400, 100);
+        this.graph.addNode('c', 150, 450);
+        this.graph.addNode('d', 400, 450);
+        this.graph.addNode('e', 600, 100);
+        this.graph.addNode('f', 600, 450);
 
         this.graph.addEdge('a', 'b', 1);
         this.graph.addEdge('a', 'c', 2);
